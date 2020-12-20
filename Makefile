@@ -31,6 +31,7 @@ daisy_seed \
 daisy_pod \
 daisy_patch \
 daisy_petal \
+super_petal \
 daisy_field \
 daisy_versio \
 dev/sr_595 \

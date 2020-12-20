@@ -71,6 +71,9 @@ class Switch
     /** \return true if the button was just released */
     inline bool FallingEdge() const { return state_ == 0x80; }
 
+    /** \return true if the button was just pressed or released */
+    inline bool EitherEdge() const { return state_ == 0x7f || state_ == 0x80; }
+
     /** \return true if the button is held down (or if the toggle is on) */
     inline bool Pressed() const { return state_ == 0xff; }
 
