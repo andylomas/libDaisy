@@ -6,6 +6,7 @@
 #include "myUtils/shiftOut.h"
 #include "myUtils/myLedController.h"
 #include "myUtils/myEncoder.h"
+#include "myUtils/myShiftedLCD.h"
 
 namespace daisy
 {
@@ -142,12 +143,14 @@ class SuperPetal
     MyEncoder     encoder[4];
 
     MyLedController led_controller;
+    LiquidCrystal lcd;
 
   private:
     void InitSwitches();
     void InitEncoders();
     void InitLeds();
     void InitAnalogControls();
+    void InitLcd();
 
     inline uint16_t* adc_ptr(const uint8_t chn) { return seed.adc.GetPtr(chn); }
 };

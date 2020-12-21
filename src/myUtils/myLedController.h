@@ -6,7 +6,7 @@
 // Class for up to 8 RGB LEDs controlled using three shift registers
 // Data is communicated to the shift registers using shiftOut()
 
-#include "daisy_core.h"
+//#include "daisy_core.h"
 #include "per/gpio.h"
 #include "myUtils/shiftOut.h"
 
@@ -15,6 +15,7 @@ class MyLedController
 public:
     void Init(const dsy_gpio_pin pin_data, const dsy_gpio_pin pin_clock, const dsy_gpio_pin pin_led_select);
     void Set(uint8_t n, const bool r, const bool g, const bool b);
+    void Set(uint8_t n, const bool v);
     void SetValue(uint8_t n, const int v);
     void Clear();
     void Update(bool force_update = false);

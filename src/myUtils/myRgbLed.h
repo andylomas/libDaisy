@@ -3,7 +3,7 @@
 #ifndef DSY_MYRGBLED_H
 #define DSY_MYRGBLED_H
 
-#include "daisy_core.h"
+//#include "daisy_core.h"
 #include "per/gpio.h"
 #include "myUtils/myLedController.h"
 
@@ -28,7 +28,7 @@ protected:
     bool r_main_, g_main_, b_main_;
     float r_inc_, g_inc_, b_inc_;
     float r_val_, g_val_, b_val_;
-    bool r_flag_, g_flag_, b_flag_;
+    //bool r_flag_, g_flag_, b_flag_;
     RgbLedColor *table_;
     int table_size_;
     bool float_mode_;

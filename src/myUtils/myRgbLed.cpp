@@ -27,9 +27,9 @@ void MyRgbLed::Init(const dsy_gpio_pin pin_r, const dsy_gpio_pin pin_g, const ds
     g_val_ = 0.0f;
     b_val_ = 0.0f;
 
-    r_flag_ = false;
-    g_flag_ = false;
-    b_flag_ = false;
+    // r_flag_ = false;
+    // g_flag_ = false;
+    // b_flag_ = false;
 
     float_mode_ = false;
 }
@@ -126,9 +126,9 @@ void MyRgbLed::SetFloat(const float r, const float g, const float b)
     }
 
     // Set the flags so that the led gets updates next cycle
-    r_flag_ = true;
-    g_flag_ = true;
-    b_flag_ = true;
+    // r_flag_ = true;
+    // g_flag_ = true;
+    // b_flag_ = true;
 
     float_mode_ = true;
 }

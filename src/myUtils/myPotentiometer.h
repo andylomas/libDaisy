@@ -5,7 +5,7 @@
 
 #define MAX_MAP_VALUES 32
 
-#include "daisy_core.h"
+//#include "daisy_core.h"
 #include "hid/ctrl.h"
 
 class MyPotentiometer

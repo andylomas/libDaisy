@@ -57,7 +57,8 @@ util/color \
 myUtils/myEncoder\
 myUtils/myLedController \
 myUtils/myRgbLed \
-myUtils/mySwitch
+myUtils/mySwitch \
+myUtils/myShiftedLCD
 
 ######################################
 # building variables

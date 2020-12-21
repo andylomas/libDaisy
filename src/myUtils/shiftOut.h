@@ -3,7 +3,7 @@
 #ifndef DSY_SHIFTOUT_H
 #define DSY_SHIFTOUT_H
 
-#include "daisy_core.h"
+//#include "daisy_core.h"
 #include "per/gpio.h"
 
 #define LSBFIRST 0

@@ -66,9 +66,9 @@ void SuperPetal::Init()
     InitSwitches();
     InitEncoders();
     InitLeds();
+    InitLcd();
     InitAnalogControls();
     SetAudioBlockSize(48);
-    //seed.usb_handle.Init(UsbHandle::FS_INTERNAL);
 }
 
 void SuperPetal::DelayMs(size_t del)
@@ -227,6 +227,17 @@ void SuperPetal::InitLeds()
     dsy_gpio_pin serial_led_select = seed.GetPin(PIN_LED_SELECT);
 
     led_controller.Init(serial_data, serial_clock, serial_led_select);
+}
+
+void SuperPetal::InitLcd()
+{
+    dsy_gpio_pin serial_data = seed.GetPin(PIN_SERIAL_DATA);
+    dsy_gpio_pin serial_clock = seed.GetPin(PIN_SERIAL_CLOCK);
+    dsy_gpio_pin serial_lcd_select = seed.GetPin(PIN_LCD_SELECT);
+
+    lcd.init(serial_data, serial_clock, serial_lcd_select);
+    lcd.begin(16, 2);
+    lcd.clear();
 }
 
 void SuperPetal::InitAnalogControls()
