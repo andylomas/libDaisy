@@ -3,6 +3,9 @@
 #define SUPER_PETAL_H /**< & */
 
 #include "daisy_seed.h"
+#include "myUtils/shiftOut.h"
+#include "myUtils/myLedController.h"
+#include "myUtils/myEncoder.h"
 
 namespace daisy
 {
@@ -16,47 +19,26 @@ class SuperPetal
     /** Switches */
     enum Sw
     {
+        SW_0,    /**< Footswitch */
         SW_1,    /**< Footswitch */
         SW_2,    /**< Footswitch */
         SW_3,    /**< Footswitch */
-        SW_4,    /**< Footswitch */
         SW_LAST, /**< Last enum item */
     };
 
     /** Knobs */
     enum Knob
     {
+        KNOB_0,    /**< & */
         KNOB_1,    /**< & */
         KNOB_2,    /**< & */
         KNOB_3,    /**< & */
         KNOB_4,    /**< & */
         KNOB_5,    /**< & */
         KNOB_6,    /**< & */
+        KNOB_7,    /**< & */
+        KNOB_8,    /**< & */
         KNOB_LAST, /**< & */
-    };
-
-    /** Leds in ringled */
-    enum RingLed
-    {
-        RING_LED_1,   /**< & */
-        RING_LED_2,   /**< & */
-        RING_LED_3,   /**< & */
-        RING_LED_4,   /**< & */
-        RING_LED_5,   /**< & */
-        RING_LED_6,   /**< & */
-        RING_LED_7,   /**< & */
-        RING_LED_8,   /**< & */
-        RING_LED_LAST /**< & */
-    };
-
-    /** footswitch leds */
-    enum FootswitchLed
-    {
-        FOOTSWITCH_LED_1,    /**< & */
-        FOOTSWITCH_LED_2,    /**< & */
-        FOOTSWITCH_LED_3,    /**< & */
-        FOOTSWITCH_LED_4,    /**< & */
-        FOOTSWITCH_LED_LAST, /**< & */
     };
 
     /** Constructor */
@@ -72,7 +54,6 @@ class SuperPetal
        \param del Delay time in ms.
      */
     void DelayMs(size_t del);
-
 
     /** Starts the callback
     \cb Interleaved callback function
@@ -135,7 +116,6 @@ class SuperPetal
         ProcessDigitalControls();
     }
 
-
     /** Get value per knob.
     \param k Which knob to get
     \return Floating point knob position.
@@ -154,41 +134,22 @@ class SuperPetal
     /** Update Leds to values you had set. */
     void UpdateLeds();
 
-    /**
-       Set ring LED colors
-       \param idx Index to set
-       \param r Red value
-       \param g Green value
-       \param b Blue value
-     */
-    void SetRingLed(RingLed idx, float r, float g, float b);
-
-    /**
-       Set footswitch LED
-       \param idx Led Index
-       \param bright Brightness
-     */
-    void SetFootswitchLed(FootswitchLed idx, float bright);
-
     DaisySeed seed;    /**< & */
-    Encoder   encoder; /**< & */
 
     AnalogControl knob[KNOB_LAST]; /**< & */
     AnalogControl expression;      /**< & */
     Switch        switches[SW_LAST] /**< & */;
+    MyEncoder     encoder[4];
 
-    RgbLed ring_led[8];       /**< & */
-    Led    footswitch_led[4]; /**< & */
+    MyLedController led_controller;
 
   private:
     void InitSwitches();
-    void InitEncoder();
+    void InitEncoders();
     void InitLeds();
     void InitAnalogControls();
 
     inline uint16_t* adc_ptr(const uint8_t chn) { return seed.adc.GetPtr(chn); }
-
-    LedDriverPca9685<2, true> led_driver_;
 };
 
 } // namespace daisy

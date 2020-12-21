@@ -24,7 +24,8 @@ util/unique_id \
 sys/system_stm32h7xx \
 usbd/usbd_cdc_if \
 usbd/usbd_desc \
-usbd/usbd_conf 
+usbd/usbd_conf \
+myUtils/shiftOut
 
 CPP_MODULES = \
 daisy_seed \
@@ -52,7 +53,11 @@ per/adc \
 per/i2c \
 per/spi \
 per/uart \
-util/color
+util/color \
+myUtils/myEncoder\
+myUtils/myLedController \
+myUtils/myRgbLed \
+myUtils/mySwitch
 
 ######################################
 # building variables

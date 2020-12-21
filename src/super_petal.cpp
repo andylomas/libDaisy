@@ -9,73 +9,52 @@ using namespace daisy;
 
 // Hardware related defines.
 // Switches
-#define SW_1_PIN 8
-#define SW_2_PIN 9
-#define SW_3_PIN 10
-#define SW_4_PIN 13
-//#define SW_5_PIN 25
-//#define SW_6_PIN 26
-//#define SW_7_PIN 7
+#define SW_0_PIN 8
+#define SW_1_PIN 9
+#define SW_2_PIN 10
+#define SW_3_PIN 13
 
-// Encoder
-#define ENC_A_PIN 28
-#define ENC_B_PIN 27
-#define ENC_CLICK_PIN 30
+// Encoders
+// #define ENC_A_PIN 28
+// #define ENC_B_PIN 27
+// #define ENC_CLICK_PIN 30
+
+#define ENC_0_A_PIN 28
+#define ENC_0_B_PIN 27
+#define ENC_0_CLICK_PIN 30
+
+#define ENC_1_A_PIN 26
+#define ENC_1_B_PIN 25
+#define ENC_1_CLICK_PIN 29
+
+#define ENC_2_A_PIN 5
+#define ENC_2_B_PIN 6
+#define ENC_2_CLICK_PIN 4
+
+#define ENC_3_A_PIN 11
+#define ENC_3_B_PIN 12
+#define ENC_3_CLICK_PIN 7
 
 // Knobs
 #define PIN_EXPRESSION 15
-#define PIN_KNOB_1 16
-#define PIN_KNOB_2 17
-#define PIN_KNOB_3 18
-#define PIN_KNOB_4 19
-#define PIN_KNOB_5 20
-#define PIN_KNOB_6 21
+#define PIN_KNOB_0 16
+#define PIN_KNOB_1 17
+#define PIN_KNOB_2 18
+#define PIN_KNOB_3 19
+#define PIN_KNOB_4 20
+#define PIN_KNOB_5 21
+#define PIN_KNOB_6 22
+#define PIN_KNOB_7 23
+#define PIN_KNOB_8 24
 
-static constexpr I2CHandle::Config petal_led_i2c_config
-    = {I2CHandle::Config::Peripheral::I2C_1,
-       {{DSY_GPIOB, 8}, {DSY_GPIOB, 9}},
-       I2CHandle::Config::Speed::I2C_1MHZ};
+// Serial connections to LED and LCD controllers
+#define PIN_SERIAL_DATA 0
+#define PIN_SERIAL_CLOCK 1
+#define PIN_LCD_SELECT 2
+#define PIN_LED_SELECT 3
 
-enum LedOrder
-{
-    LED_RING_1_R,
-    LED_RING_1_G,
-    LED_RING_1_B,
-    LED_RING_5_R,
-    LED_RING_5_G,
-    LED_RING_5_B,
-    LED_RING_2_R,
-    LED_RING_2_G,
-    LED_RING_2_B,
-    LED_RING_6_R,
-    LED_RING_6_G,
-    LED_RING_6_B,
-    LED_RING_3_R,
-    LED_RING_3_G,
-    LED_RING_3_B,
-    LED_FS_1,
-    LED_RING_4_R,
-    LED_RING_4_G,
-    LED_RING_4_B,
-    LED_RING_7_R,
-    LED_RING_7_G,
-    LED_RING_7_B,
-    LED_RING_8_R,
-    LED_RING_8_G,
-    LED_RING_8_B,
-    LED_FS_2,
-    LED_FS_3,
-    LED_FS_4,
-    LED_FAKE1,
-    LED_FAKE2,
-    LED_FAKE3,
-    LED_FAKE4,
-    LED_LAST,
-};
-
-static LedDriverPca9685<2, true>::DmaBuffer DMA_BUFFER_MEM_SECTION
-    petal_led_dma_buffer_a,
-    petal_led_dma_buffer_b;
+// MIDI pin
+#define PIN_MIDI
 
 void SuperPetal::Init()
 {
@@ -85,7 +64,7 @@ void SuperPetal::Init()
     seed.Init();
     dsy_tim_start();
     InitSwitches();
-    InitEncoder();
+    InitEncoders();
     InitLeds();
     InitAnalogControls();
     SetAudioBlockSize(48);
@@ -157,7 +136,6 @@ void SuperPetal::StopAdc()
     seed.adc.Stop();
 }
 
-
 void SuperPetal::ProcessAnalogControls()
 {
     for(size_t i = 0; i < KNOB_LAST; i++)
@@ -181,91 +159,34 @@ float SuperPetal::GetExpression()
 
 void SuperPetal::ProcessDigitalControls()
 {
-    encoder.Debounce();
+    for(size_t i = 0; i < 4; i++)
+    {
+        encoder[i].Debounce();
+    }
+
     for(size_t i = 0; i < SW_LAST; i++)
     {
         switches[i].Debounce();
     }
 }
 
-
 void SuperPetal::ClearLeds()
 {
-    // Using Color
-    //    Color c;
-    //    c.Init(Color::PresetColor::OFF);
-    //    for(size_t i = 0; i < RING_LED_LAST; i++)
-    //    {
-    //        ring_led[i].SetColor(c);
-    //    }
-    for(size_t i = 0; i < RING_LED_LAST; i++)
-    {
-        SetRingLed(static_cast<RingLed>(i), 0.0f, 0.0f, 0.0f);
-    }
-    for(size_t i = 0; i < FOOTSWITCH_LED_LAST; i++)
-    {
-        SetFootswitchLed(static_cast<FootswitchLed>(i), 0.0f);
-    }
+    led_controller.Clear();
 }
 
 void SuperPetal::UpdateLeds()
 {
-    led_driver_.SwapBuffersAndTransmit();
-}
-
-void SuperPetal::SetRingLed(RingLed idx, float r, float g, float b)
-{
-    uint8_t r_addr[RING_LED_LAST] = {LED_RING_1_R,
-                                     LED_RING_2_R,
-                                     LED_RING_3_R,
-                                     LED_RING_4_R,
-                                     LED_RING_5_R,
-                                     LED_RING_6_R,
-                                     LED_RING_7_R,
-                                     LED_RING_8_R};
-    uint8_t g_addr[RING_LED_LAST] = {LED_RING_1_G,
-                                     LED_RING_2_G,
-                                     LED_RING_3_G,
-                                     LED_RING_4_G,
-                                     LED_RING_5_G,
-                                     LED_RING_6_G,
-                                     LED_RING_7_G,
-                                     LED_RING_8_G};
-    uint8_t b_addr[RING_LED_LAST] = {LED_RING_1_B,
-                                     LED_RING_2_B,
-                                     LED_RING_3_B,
-                                     LED_RING_4_B,
-                                     LED_RING_5_B,
-                                     LED_RING_6_B,
-                                     LED_RING_7_B,
-                                     LED_RING_8_B};
-
-
-    led_driver_.SetLed(r_addr[idx], r);
-    led_driver_.SetLed(g_addr[idx], g);
-    led_driver_.SetLed(b_addr[idx], b);
-}
-void SuperPetal::SetFootswitchLed(FootswitchLed idx, float bright)
-{
-    uint8_t fs_addr[FOOTSWITCH_LED_LAST]
-        = {LED_FS_1, LED_FS_2, LED_FS_3, LED_FS_4};
-    led_driver_.SetLed(fs_addr[idx], bright);
+    led_controller.Update();
 }
 
 void SuperPetal::InitSwitches()
 {
-    //    // button1
-    //    button1.Init(seed.GetPin(SW_1_PIN), callback_rate_);
-    //    // button2
-    //    button2.Init(seed.GetPin(SW_2_PIN), callback_rate_);
-    //
-    //    buttons[BUTTON_1] = &button1;
-    //    buttons[BUTTON_2] = &button2;
     uint8_t pin_numbers[SW_LAST] = {
+        SW_0_PIN,
         SW_1_PIN,
         SW_2_PIN,
-        SW_3_PIN,
-        SW_4_PIN,
+        SW_3_PIN
     };
 
     for(size_t i = 0; i < SW_LAST; i++)
@@ -274,26 +195,38 @@ void SuperPetal::InitSwitches()
     }
 }
 
-void SuperPetal::InitEncoder()
+void SuperPetal::InitEncoders()
 {
     dsy_gpio_pin a, b, click;
-    a     = seed.GetPin(ENC_A_PIN);
-    b     = seed.GetPin(ENC_B_PIN);
-    click = seed.GetPin(ENC_CLICK_PIN);
-    encoder.Init(a, b, click, AudioCallbackRate());
+
+    a     = seed.GetPin(ENC_0_A_PIN);
+    b     = seed.GetPin(ENC_0_B_PIN);
+    click = seed.GetPin(ENC_0_CLICK_PIN);
+    encoder[0].Init(a, b, click, AudioCallbackRate());
+
+    a     = seed.GetPin(ENC_1_A_PIN);
+    b     = seed.GetPin(ENC_1_B_PIN);
+    click = seed.GetPin(ENC_1_CLICK_PIN);
+    encoder[1].Init(a, b, click, AudioCallbackRate());
+
+    a     = seed.GetPin(ENC_2_A_PIN);
+    b     = seed.GetPin(ENC_2_B_PIN);
+    click = seed.GetPin(ENC_2_CLICK_PIN);
+    encoder[2].Init(a, b, click, AudioCallbackRate());
+
+    a     = seed.GetPin(ENC_3_A_PIN);
+    b     = seed.GetPin(ENC_3_B_PIN);
+    click = seed.GetPin(ENC_3_CLICK_PIN);
+    encoder[3].Init(a, b, click, AudioCallbackRate());
 }
 
 void SuperPetal::InitLeds()
 {
-    // LEDs are on the LED Driver.
+    dsy_gpio_pin serial_data = seed.GetPin(PIN_SERIAL_DATA);
+    dsy_gpio_pin serial_clock = seed.GetPin(PIN_SERIAL_CLOCK);
+    dsy_gpio_pin serial_led_select = seed.GetPin(PIN_LED_SELECT);
 
-    // Need to figure out how we want to handle that.
-    uint8_t   addr[2] = {0x00, 0x01};
-    I2CHandle i2c;
-    i2c.Init(petal_led_i2c_config);
-    led_driver_.Init(i2c, addr, petal_led_dma_buffer_a, petal_led_dma_buffer_b);
-    ClearLeds();
-    UpdateLeds();
+    led_controller.Init(serial_data, serial_clock, serial_led_select);
 }
 
 void SuperPetal::InitAnalogControls()
@@ -302,14 +235,19 @@ void SuperPetal::InitAnalogControls()
     // KNOB_LAST + 1 because of Expression input
     AdcChannelConfig cfg[KNOB_LAST + 1];
     // Init with Single Pins
+    cfg[KNOB_0].InitSingle(seed.GetPin(PIN_KNOB_0));
     cfg[KNOB_1].InitSingle(seed.GetPin(PIN_KNOB_1));
     cfg[KNOB_2].InitSingle(seed.GetPin(PIN_KNOB_2));
     cfg[KNOB_3].InitSingle(seed.GetPin(PIN_KNOB_3));
     cfg[KNOB_4].InitSingle(seed.GetPin(PIN_KNOB_4));
     cfg[KNOB_5].InitSingle(seed.GetPin(PIN_KNOB_5));
     cfg[KNOB_6].InitSingle(seed.GetPin(PIN_KNOB_6));
+    cfg[KNOB_7].InitSingle(seed.GetPin(PIN_KNOB_7));
+    cfg[KNOB_8].InitSingle(seed.GetPin(PIN_KNOB_8));
     // Special case for Expression
     cfg[KNOB_LAST].InitSingle(seed.GetPin(PIN_EXPRESSION));
+
+    printf("KNOB_LAST = %d\n", KNOB_LAST);
 
     seed.adc.Init(cfg, KNOB_LAST + 1);
     // Make an array of pointers to the knob.
