@@ -32,6 +32,8 @@ void MyEncoder::Init(
     transitions_ = 0;
     prev_state_ = 0;
 
+    wrap_mode_ = true;
+
     encoder_linked_led_ = NULL;
 
     MySwitch::Init(pin_click, update_rate, true);
@@ -81,9 +83,9 @@ void MyEncoder::Debounce()
         {
             inc_ = 1;
             val_++;
-            if (val_ >= max_val_)
+            if (val_ > max_val_)
             {
-                val_ = min_val_;
+                val_ = wrap_mode_ ? min_val_ : max_val_;
             }
         }
         else if ((value_on_rising_ && transitions_ == 0b001011) || (value_on_falling_ && transitions_ == 0b110100)) // CCW direction
@@ -92,7 +94,7 @@ void MyEncoder::Debounce()
             val_--;
             if (val_ < min_val_)
             {
-                val_ = max_val_ - 1;
+                val_ = wrap_mode_ ? max_val_ : min_val_;
             }
         }
 
@@ -121,7 +123,7 @@ void MyEncoder::Reset()
     MySwitch::Reset();
 }
 
-void MyEncoder::LinkLed( MyRgbLed *linked_led )
+void MyEncoder::SetLinkLed( MyRgbLed *linked_led )
 {
     encoder_linked_led_ = linked_led;
 
