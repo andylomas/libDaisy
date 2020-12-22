@@ -180,6 +180,51 @@ void SuperPetal::UpdateLeds()
     led_controller.Update();
 }
 
+void SuperPetal::SetLed(uint8_t idx, bool val)
+{
+    led_controller.Set(idx, val);
+}
+
+void SuperPetal::SetLed(uint8_t idx, bool r, bool g, bool b)
+{
+    led_controller.Set(idx, r, g, b);
+}
+
+void SuperPetal::SetLedValue(uint8_t idx, int val)
+{
+    led_controller.SetValue(idx, val);
+}
+
+void SuperPetal::SetFootswitchLed(uint8_t idx, bool val)
+{
+    led_controller.Set(idx, val);
+}
+
+void SuperPetal::SetFootswitchLed(uint8_t idx, bool r, bool g, bool b)
+{
+    led_controller.Set(idx, r, g, b);
+}
+
+void SuperPetal::SetFootswitchLedValue(uint8_t idx, int val)
+{
+    led_controller.SetValue(idx, val);
+}
+
+void SuperPetal::SetEncoderLed(uint8_t idx, bool val)
+{
+    led_controller.Set(idx + 4, val);
+}
+
+void SuperPetal::SetEncoderLed(uint8_t idx, bool r, bool g, bool b)
+{
+    led_controller.Set(idx + 4, r, g, b);
+}
+
+void SuperPetal::SetEncoderLedValue(uint8_t idx, int val)
+{
+    led_controller.SetValue(idx + 4, val);
+}
+
 void SuperPetal::InitSwitches()
 {
     uint8_t pin_numbers[SW_LAST] = {

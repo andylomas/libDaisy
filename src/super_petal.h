@@ -135,6 +135,30 @@ class SuperPetal
     /** Update Leds to values you had set. */
     void UpdateLeds();
 
+    /**
+       Set any LED (footswitch 0-1, Encoder 4-7)
+       \param idx Led Index
+     */
+    void SetLed(uint8_t idx, bool val);
+    void SetLed(uint8_t idx, bool r, bool g, bool b);
+    void SetLedValue(uint8_t idx, int val);
+
+    /**
+       Set footswitch LED
+       \param idx Led Index
+     */
+    void SetFootswitchLed(uint8_t idx, bool val);
+    void SetFootswitchLed(uint8_t idx, bool r, bool g, bool b);
+    void SetFootswitchLedValue(uint8_t idx, int val);
+
+    /**
+       Set encoder LED
+       \param idx Led Index
+     */
+    void SetEncoderLed(uint8_t idx, bool val);
+    void SetEncoderLed(uint8_t idx, bool r, bool g, bool b);
+    void SetEncoderLedValue(uint8_t idx, int val);
+
     DaisySeed seed;    /**< & */
 
     AnalogControl knob[KNOB_LAST]; /**< & */

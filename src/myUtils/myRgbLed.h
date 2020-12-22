@@ -18,6 +18,7 @@ public:
     void Init(const dsy_gpio_pin pin_r, const dsy_gpio_pin pin_g, const dsy_gpio_pin pin_b);
     void Init(MyLedController *led_controller, uint8_t n);
     virtual void Set(const bool r, const bool g, const bool b);
+    virtual void Set(const bool v);
     virtual void SetValue(const int v);
     void SetFloat(const float r, const float g, const float b);
     void SetTable(int size, RgbLedColor *table);

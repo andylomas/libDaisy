@@ -68,7 +68,7 @@ void MyEncoder::Debounce()
     // If we've got a change of state, record it in the transitions
     if (cur_state != prev_state_) {
         // Add the new state change to the transitions, only keeping the 6 least significant bits
-        transitions_ = (transitions_ << 2) & 0b111111 | cur_state;
+        transitions_ = ((transitions_ << 2) & 0b111111) | cur_state;
 
         inc_ = 0;
 

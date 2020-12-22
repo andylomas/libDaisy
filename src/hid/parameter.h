@@ -16,8 +16,9 @@ class Parameter
     enum Curve
     {
         LINEAR,      /**< Linear curve */
-        EXPONENTIAL, /**< Exponential curve */
-        LOGARITHMIC, /**<  Logarithmic curve */
+        EXPONENTIAL, /**< Exponential curve, which is actually quadratic */
+        LOGARITHMIC, /**< Logarithmic curve */
+        QUADRATIC,   /**< Quadratic curve */
         CUBE,        /**< Cubic curve */
         LAST,        /**< Final enum element. */
     };
@@ -29,7 +30,7 @@ class Parameter
     /** initialize a parameter using an hid_ctrl object.
     \param input - object containing the direct link to a hardware control source.
     \param min - bottom of range. (when input is 0.0)
-        \param max - top of range (when input is 1.0)
+    \param max - top of range (when input is 1.0)
     \param curve - the scaling curve for the input->output transformation.
     */
     void Init(AnalogControl input, float min, float max, Curve curve);

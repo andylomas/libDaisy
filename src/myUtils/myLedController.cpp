@@ -42,6 +42,11 @@ void MyLedController::Set(uint8_t n, const bool r, const bool g, const bool b)
         b_data_ &= ~m;
 }
 
+void MyLedController::Set(uint8_t n, const bool v)
+{
+    Set(n, v, v, v);
+}
+
 void MyLedController::SetValue(uint8_t n, const int v)
 {
     Set(n, v & 1, v & 2, v & 4);

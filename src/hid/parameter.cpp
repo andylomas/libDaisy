@@ -17,8 +17,11 @@ float Parameter::Process()
 {
     switch(pcurve_)
     {
-        case LINEAR: val_ = (in_.Process() * (pmax_ - pmin_)) + pmin_; break;
+        case LINEAR:
+            val_ = (in_.Process() * (pmax_ - pmin_)) + pmin_;
+            break;
         case EXPONENTIAL:
+        case QUADRATIC:
             val_ = in_.Process();
             val_ = ((val_ * val_) * (pmax_ - pmin_)) + pmin_;
             break;
@@ -29,7 +32,8 @@ float Parameter::Process()
             val_ = in_.Process();
             val_ = ((val_ * (val_ * val_)) * (pmax_ - pmin_)) + pmin_;
             break;
-        default: break;
+        default:
+            break;
     }
     return val_;
 }

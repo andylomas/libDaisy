@@ -63,6 +63,11 @@ void MyRgbLed::Set(const bool r, const bool g, const bool b)
     
 }
 
+void MyRgbLed::Set(const bool v)
+{
+    Set(v, v, v);
+}
+
 void MyRgbLed::SetValue(const int v)
 {
     // If a color table has been defined use that
