@@ -130,11 +130,6 @@ void MyRgbLed::SetFloat(const float r, const float g, const float b)
         b_inc_ = (1.0f - bb) / bb;
     }
 
-    // Set the flags so that the led gets updates next cycle
-    // r_flag_ = true;
-    // g_flag_ = true;
-    // b_flag_ = true;
-
     float_mode_ = true;
 }
 

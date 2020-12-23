@@ -1,3 +1,4 @@
+// super_petal.cpp
 #include "super_petal.h"
 
 using namespace daisy;
@@ -9,34 +10,29 @@ using namespace daisy;
 
 // Hardware related defines.
 // Switches
-#define SW_0_PIN 8
-#define SW_1_PIN 9
-#define SW_2_PIN 10
-#define SW_3_PIN 13
+#define PIN_SW_0 8
+#define PIN_SW_1 9
+#define PIN_SW_2 10
+#define PIN_SW_3 13
 
 // Encoders
-// #define ENC_A_PIN 28
-// #define ENC_B_PIN 27
-// #define ENC_CLICK_PIN 30
+#define PIN_ENC_0_A 28
+#define PIN_ENC_0_B 27
+#define PIN_ENC_0_CLICK 30
 
-#define ENC_0_A_PIN 28
-#define ENC_0_B_PIN 27
-#define ENC_0_CLICK_PIN 30
+#define PIN_ENC_1_A 26
+#define PIN_ENC_1_B 25
+#define PIN_ENC_1_CLICK 29
 
-#define ENC_1_A_PIN 26
-#define ENC_1_B_PIN 25
-#define ENC_1_CLICK_PIN 29
+#define PIN_ENC_2_A 5
+#define PIN_ENC_2_B 6
+#define PIN_ENC_2_CLICK 4
 
-#define ENC_2_A_PIN 5
-#define ENC_2_B_PIN 6
-#define ENC_2_CLICK_PIN 4
-
-#define ENC_3_A_PIN 11
-#define ENC_3_B_PIN 12
-#define ENC_3_CLICK_PIN 7
+#define PIN_ENC_3_A 11
+#define PIN_ENC_3_B 12
+#define PIN_ENC_3_CLICK 7
 
 // Knobs
-#define PIN_EXPRESSION 15
 #define PIN_KNOB_0 16
 #define PIN_KNOB_1 17
 #define PIN_KNOB_2 18
@@ -47,14 +43,17 @@ using namespace daisy;
 #define PIN_KNOB_7 23
 #define PIN_KNOB_8 24
 
+// Expression
+#define PIN_EXPRESSION 15
+
 // Serial connections to LED and LCD controllers
 #define PIN_SERIAL_DATA 0
 #define PIN_SERIAL_CLOCK 1
-#define PIN_LCD_SELECT 2
-#define PIN_LED_SELECT 3
+#define PIN_SERIAL_LCD_SELECT 2
+#define PIN_SERIAL_LED_SELECT 3
 
 // MIDI pin
-#define PIN_MIDI
+#define PIN_MIDI 14
 
 void SuperPetal::Init()
 {
@@ -138,18 +137,16 @@ void SuperPetal::StopAdc()
 
 void SuperPetal::ProcessAnalogControls()
 {
-    for(size_t i = 0; i < KNOB_LAST; i++)
+    for(size_t i = 0; i < NUM_KNOBS; i++)
     {
         knob[i].Process();
     }
     expression.Process();
 }
 
-float SuperPetal::GetKnobValue(Knob k)
+float SuperPetal::GetKnobValue(uint8_t k)
 {
-    size_t idx;
-    idx = k < KNOB_LAST ? k : KNOB_1;
-    return knob[idx].Value();
+    return knob[k].Value();
 }
 
 float SuperPetal::GetExpression()
@@ -159,12 +156,12 @@ float SuperPetal::GetExpression()
 
 void SuperPetal::ProcessDigitalControls()
 {
-    for(size_t i = 0; i < 4; i++)
+    for(size_t i = 0; i < NUM_ENCODERS; i++)
     {
         encoder[i].Debounce();
     }
 
-    for(size_t i = 0; i < SW_LAST; i++)
+    for(size_t i = 0; i < NUM_SWITCHES; i++)
     {
         switches[i].Debounce();
     }
@@ -227,14 +224,14 @@ void SuperPetal::SetEncoderLedValue(uint8_t idx, int val)
 
 void SuperPetal::InitSwitches()
 {
-    uint8_t pin_numbers[SW_LAST] = {
-        SW_0_PIN,
-        SW_1_PIN,
-        SW_2_PIN,
-        SW_3_PIN
+    uint8_t pin_numbers[NUM_SWITCHES] = {
+        PIN_SW_0,
+        PIN_SW_1,
+        PIN_SW_2,
+        PIN_SW_3
     };
 
-    for(size_t i = 0; i < SW_LAST; i++)
+    for(size_t i = 0; i < NUM_SWITCHES; i++)
     {
         switches[i].Init(seed.GetPin(pin_numbers[i]), AudioCallbackRate());
     }
@@ -244,24 +241,24 @@ void SuperPetal::InitEncoders()
 {
     dsy_gpio_pin a, b, click;
 
-    a     = seed.GetPin(ENC_0_A_PIN);
-    b     = seed.GetPin(ENC_0_B_PIN);
-    click = seed.GetPin(ENC_0_CLICK_PIN);
+    a     = seed.GetPin(PIN_ENC_0_A);
+    b     = seed.GetPin(PIN_ENC_0_B);
+    click = seed.GetPin(PIN_ENC_0_CLICK);
     encoder[0].Init(a, b, click, AudioCallbackRate());
 
-    a     = seed.GetPin(ENC_1_A_PIN);
-    b     = seed.GetPin(ENC_1_B_PIN);
-    click = seed.GetPin(ENC_1_CLICK_PIN);
+    a     = seed.GetPin(PIN_ENC_1_A);
+    b     = seed.GetPin(PIN_ENC_1_B);
+    click = seed.GetPin(PIN_ENC_1_CLICK);
     encoder[1].Init(a, b, click, AudioCallbackRate());
 
-    a     = seed.GetPin(ENC_2_A_PIN);
-    b     = seed.GetPin(ENC_2_B_PIN);
-    click = seed.GetPin(ENC_2_CLICK_PIN);
+    a     = seed.GetPin(PIN_ENC_2_A);
+    b     = seed.GetPin(PIN_ENC_2_B);
+    click = seed.GetPin(PIN_ENC_2_CLICK);
     encoder[2].Init(a, b, click, AudioCallbackRate());
 
-    a     = seed.GetPin(ENC_3_A_PIN);
-    b     = seed.GetPin(ENC_3_B_PIN);
-    click = seed.GetPin(ENC_3_CLICK_PIN);
+    a     = seed.GetPin(PIN_ENC_3_A);
+    b     = seed.GetPin(PIN_ENC_3_B);
+    click = seed.GetPin(PIN_ENC_3_CLICK);
     encoder[3].Init(a, b, click, AudioCallbackRate());
 }
 
@@ -269,7 +266,7 @@ void SuperPetal::InitLeds()
 {
     dsy_gpio_pin serial_data = seed.GetPin(PIN_SERIAL_DATA);
     dsy_gpio_pin serial_clock = seed.GetPin(PIN_SERIAL_CLOCK);
-    dsy_gpio_pin serial_led_select = seed.GetPin(PIN_LED_SELECT);
+    dsy_gpio_pin serial_led_select = seed.GetPin(PIN_SERIAL_LED_SELECT);
 
     led_controller.Init(serial_data, serial_clock, serial_led_select);
 }
@@ -278,7 +275,7 @@ void SuperPetal::InitLcd()
 {
     dsy_gpio_pin serial_data = seed.GetPin(PIN_SERIAL_DATA);
     dsy_gpio_pin serial_clock = seed.GetPin(PIN_SERIAL_CLOCK);
-    dsy_gpio_pin serial_lcd_select = seed.GetPin(PIN_LCD_SELECT);
+    dsy_gpio_pin serial_lcd_select = seed.GetPin(PIN_SERIAL_LCD_SELECT);
 
     lcd.init(serial_data, serial_clock, serial_lcd_select);
     lcd.begin(16, 2);
@@ -288,28 +285,27 @@ void SuperPetal::InitLcd()
 void SuperPetal::InitAnalogControls()
 {
     // Set order of ADCs based on CHANNEL NUMBER
-    // KNOB_LAST + 1 because of Expression input
-    AdcChannelConfig cfg[KNOB_LAST + 1];
+    // NUN_KNOBS + 1 because of Expression input
+    AdcChannelConfig cfg[NUM_KNOBS + 1];
     // Init with Single Pins
-    cfg[KNOB_0].InitSingle(seed.GetPin(PIN_KNOB_0));
-    cfg[KNOB_1].InitSingle(seed.GetPin(PIN_KNOB_1));
-    cfg[KNOB_2].InitSingle(seed.GetPin(PIN_KNOB_2));
-    cfg[KNOB_3].InitSingle(seed.GetPin(PIN_KNOB_3));
-    cfg[KNOB_4].InitSingle(seed.GetPin(PIN_KNOB_4));
-    cfg[KNOB_5].InitSingle(seed.GetPin(PIN_KNOB_5));
-    cfg[KNOB_6].InitSingle(seed.GetPin(PIN_KNOB_6));
-    cfg[KNOB_7].InitSingle(seed.GetPin(PIN_KNOB_7));
-    cfg[KNOB_8].InitSingle(seed.GetPin(PIN_KNOB_8));
+    cfg[0].InitSingle(seed.GetPin(PIN_KNOB_0));
+    cfg[1].InitSingle(seed.GetPin(PIN_KNOB_1));
+    cfg[2].InitSingle(seed.GetPin(PIN_KNOB_2));
+    cfg[3].InitSingle(seed.GetPin(PIN_KNOB_3));
+    cfg[4].InitSingle(seed.GetPin(PIN_KNOB_4));
+    cfg[5].InitSingle(seed.GetPin(PIN_KNOB_5));
+    cfg[6].InitSingle(seed.GetPin(PIN_KNOB_6));
+    cfg[7].InitSingle(seed.GetPin(PIN_KNOB_7));
+    cfg[8].InitSingle(seed.GetPin(PIN_KNOB_8));
+
     // Special case for Expression
-    cfg[KNOB_LAST].InitSingle(seed.GetPin(PIN_EXPRESSION));
+    cfg[9].InitSingle(seed.GetPin(PIN_EXPRESSION));
 
-    printf("KNOB_LAST = %d\n", KNOB_LAST);
-
-    seed.adc.Init(cfg, KNOB_LAST + 1);
+    seed.adc.Init(cfg, NUM_KNOBS + 1);
     // Make an array of pointers to the knob.
-    for(int i = 0; i < KNOB_LAST; i++)
+    for(int i = 0; i < NUM_KNOBS; i++)
     {
         knob[i].Init(seed.adc.GetPtr(i), AudioCallbackRate());
     }
-    expression.Init(seed.adc.GetPtr(KNOB_LAST), AudioCallbackRate());
+    expression.Init(seed.adc.GetPtr(NUM_KNOBS), AudioCallbackRate());
 }

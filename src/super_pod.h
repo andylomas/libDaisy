@@ -1,13 +1,11 @@
-// super_petal.h
+// super_pod.h
 #pragma once
-#ifndef SUPER_PETAL_H
-#define SUPER_PETAL_H /**< & */
+#ifndef SUPER_POD_H
+#define SUPER_POD_H /**< & */
 
 #include "daisy_seed.h"
-#include "myUtils/shiftOut.h"
-#include "myUtils/myLedController.h"
 #include "myUtils/myEncoder.h"
-#include "myUtils/myShiftedLCD.h"
+#include "myUtils/myRgbLed.h"
 
 namespace daisy
 {
@@ -17,16 +15,18 @@ namespace daisy
 */
 
 #define NUM_SWITCHES 4
-#define NUM_KNOBS 9
-#define NUM_ENCODERS 4
+#define NUM_BUTTONS 4
+#define NUM_KNOBS 12
+#define NUM_ENCODERS 2
+#define NUM_LEDS 2
 
-class SuperPetal
+class SuperPod
 {
   public:
     /** Constructor */
-    SuperPetal() {}
+    SuperPod() {}
     /** Destructor */
-    ~SuperPetal() {}
+    ~SuperPod() {}
 
     /** Initialize daisy petal */
     void Init();
@@ -104,9 +104,6 @@ class SuperPetal
     */
     float GetKnobValue(uint8_t k);
 
-    /** & */
-    float GetExpression();
-
     /** Process digital controls */
     void ProcessDigitalControls();
 
@@ -117,45 +114,26 @@ class SuperPetal
     void UpdateLeds();
 
     /**
-       Set any LED (footswitch 0-1, Encoder 4-7)
+       Set any LED
        \param idx Led Index
      */
     void SetLed(uint8_t idx, bool val);
     void SetLed(uint8_t idx, bool r, bool g, bool b);
     void SetLedValue(uint8_t idx, int val);
 
-    /**
-       Set footswitch LED
-       \param idx Led Index
-     */
-    void SetFootswitchLed(uint8_t idx, bool val);
-    void SetFootswitchLed(uint8_t idx, bool r, bool g, bool b);
-    void SetFootswitchLedValue(uint8_t idx, int val);
-
-    /**
-       Set encoder LED
-       \param idx Led Index
-     */
-    void SetEncoderLed(uint8_t idx, bool val);
-    void SetEncoderLed(uint8_t idx, bool r, bool g, bool b);
-    void SetEncoderLedValue(uint8_t idx, int val);
-
     DaisySeed seed;    /**< & */
 
-    AnalogControl knob[NUM_KNOBS]; /**< & */
-    AnalogControl expression;      /**< & */
-    Switch        switches[NUM_SWITCHES] /**< & */;
+    AnalogControl knob[NUM_KNOBS];
+    Switch        switches[NUM_SWITCHES];
+    Switch        buttons[NUM_BUTTONS];
     MyEncoder     encoder[NUM_ENCODERS];
-
-    MyLedController led_controller;
-    LiquidCrystal lcd;
+    MyRgbLed      led[NUM_LEDS];
 
   private:
     void InitSwitches();
     void InitEncoders();
     void InitLeds();
     void InitAnalogControls();
-    void InitLcd();
 
     inline uint16_t* adc_ptr(const uint8_t chn) { return seed.adc.GetPtr(chn); }
 };
