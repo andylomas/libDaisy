@@ -2,6 +2,8 @@
 #include <stdint.h>
 #include "hid/ctrl.h"
 
+#define MAX_NUM_MAP_VALUES 32
+
 namespace daisy
 {
 /** @addtogroup controls
@@ -20,6 +22,7 @@ class Parameter
         LOGARITHMIC, /**< Logarithmic curve */
         QUADRATIC,   /**< Quadratic curve */
         CUBE,        /**< Cubic curve */
+        MAP,         /**< Map of values */
         LAST,        /**< Final enum element. */
     };
     /** Constructor */
@@ -34,6 +37,14 @@ class Parameter
     \param curve - the scaling curve for the input->output transformation.
     */
     void Init(AnalogControl input, float min, float max, Curve curve);
+    void SetCurve(Curve curve) { pcurve_ = curve; }
+    void SetRange(float min, float max);
+
+    /** set map values for the param
+    \param num_items - number of map values.
+    \param map_values - array of float map values
+    */
+    void SetMapValues(const uint8_t num_items, const float* map_values);
 
     /** processes the input signal, this should be called at the samplerate of the hid_ctrl passed in.
     \return  a float with the specified transformation applied.
@@ -54,6 +65,8 @@ class Parameter
     float         lmin_, lmax_; // for log range
     float         val_;
     Curve         pcurve_;
+    float         map_values_[MAX_NUM_MAP_VALUES];
+    uint8_t       num_map_values_;    
 };
 /** @} */
 } // namespace daisy

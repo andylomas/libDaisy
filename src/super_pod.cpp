@@ -35,18 +35,18 @@ using namespace daisy;
 #define PIN_ENC_1_B 29
 #define PIN_ENC_1_CLICK 4
 
-#define PIN_POT_0 23
-#define PIN_POT_1 24
-#define PIN_POT_2 25
-#define PIN_POT_3 28
-#define PIN_POT_4 19
-#define PIN_POT_5 20
-#define PIN_POT_6 21
-#define PIN_POT_7 22
-#define PIN_POT_8 15
-#define PIN_POT_9 16
-#define PIN_POT_10 17
-#define PIN_POT_11 18
+#define PIN_KNOB_0 23
+#define PIN_KNOB_1 24
+#define PIN_KNOB_2 25
+#define PIN_KNOB_3 28
+#define PIN_KNOB_4 19
+#define PIN_KNOB_5 20
+#define PIN_KNOB_6 21
+#define PIN_KNOB_7 22
+#define PIN_KNOB_8 15
+#define PIN_KNOB_9 16
+#define PIN_KNOB_10 17
+#define PIN_KNOB_11 18
 
 #define PIN_MIDI 14
 
@@ -60,7 +60,6 @@ void SuperPod::Init()
     InitSwitches();
     InitEncoders();
     InitLeds();
-    InitLcd();
     InitAnalogControls();
     SetAudioBlockSize(48);
 }
@@ -135,6 +134,7 @@ void SuperPod::ProcessAnalogControls()
     for(size_t i = 0; i < NUM_KNOBS; i++)
     {
         knob[i].Process();
+        // knob[i].Debounce();
     }
 }
 
@@ -199,7 +199,7 @@ void SuperPod::SetLedFloat(uint8_t idx, float r, float g, float b)
 
 void SuperPod::InitSwitches()
 {
-    uint8_t pin_numbers[NUM_SWITCHES] = {
+    uint8_t switch_pin_numbers[NUM_SWITCHES] = {
         PIN_SW_0,
         PIN_SW_1,
         PIN_SW_2,
@@ -208,10 +208,10 @@ void SuperPod::InitSwitches()
 
     for(size_t i = 0; i < NUM_SWITCHES; i++)
     {
-        switches[i].Init(seed.GetPin(pin_numbers[i]), AudioCallbackRate());
+        switches[i].Init(seed.GetPin(switch_pin_numbers[i]), AudioCallbackRate());
     }
 
-    uint8_t pin_numbers[NUM_BUTTONS] = {
+    uint8_t button_pin_numbers[NUM_BUTTONS] = {
         PIN_BUT_0,
         PIN_BUT_1,
         PIN_BUT_2,
@@ -220,7 +220,7 @@ void SuperPod::InitSwitches()
 
     for(size_t i = 0; i < NUM_BUTTONS; i++)
     {
-        buttonws[i].Init(seed.GetPin(pin_numbers[i]), AudioCallbackRate());
+        buttons[i].Init(seed.GetPin(button_pin_numbers[i]), AudioCallbackRate());
     }    
 }
 
@@ -241,8 +241,16 @@ void SuperPod::InitEncoders()
 
 void SuperPod::InitLeds()
 {
-    led[0].Init(PIN_LED_0_RED, PIN_LED_0_GREEN, PIN_LED_0_BLUE);
-	led[1].Init(PIN_LED_1_RED, PIN_LED_1_GREEN, PIN_LED_1_BLUE);
+    dsy_gpio_pin pin_0_red = seed.GetPin(PIN_LED_0_RED);
+    dsy_gpio_pin pin_0_green = seed.GetPin(PIN_LED_0_GREEN);
+    dsy_gpio_pin pin_0_blue = seed.GetPin(PIN_LED_0_BLUE);
+
+    dsy_gpio_pin pin_1_red = seed.GetPin(PIN_LED_1_RED);
+    dsy_gpio_pin pin_1_green = seed.GetPin(PIN_LED_1_GREEN);
+    dsy_gpio_pin pin_1_blue = seed.GetPin(PIN_LED_1_BLUE);
+
+    led[0].Init(pin_0_red, pin_0_green, pin_0_blue);
+    led[1].Init(pin_1_red, pin_1_green, pin_1_blue);
 
 	for (int i = 0; i < NUM_LEDS; i++)
 	{
@@ -275,4 +283,17 @@ void SuperPod::InitAnalogControls()
     {
         knob[i].Init(seed.adc.GetPtr(i), AudioCallbackRate());
     }
+
+    // knob[0].Init(seed.GetPin(PIN_KNOB_0));
+    // knob[1].Init(seed.GetPin(PIN_KNOB_1));
+    // knob[2].Init(seed.GetPin(PIN_KNOB_2));
+    // knob[3].Init(seed.GetPin(PIN_KNOB_3));
+    // knob[4].Init(seed.GetPin(PIN_KNOB_4));
+    // knob[5].Init(seed.GetPin(PIN_KNOB_5));
+    // knob[6].Init(seed.GetPin(PIN_KNOB_6));
+    // knob[7].Init(seed.GetPin(PIN_KNOB_7));
+    // knob[8].Init(seed.GetPin(PIN_KNOB_8));
+    // knob[9].Init(seed.GetPin(PIN_KNOB_9));
+    // knob[10].Init(seed.GetPin(PIN_KNOB_10));
+    // knob[11].Init(seed.GetPin(PIN_KNOB_11));
 }

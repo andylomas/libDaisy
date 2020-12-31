@@ -119,11 +119,19 @@ void MyEncoder::SetValue(const int16_t val)
 
 void MyEncoder::Reset()
 {
-    SetValue(0);
+    if (min_val_ < 0)
+    {
+        SetValue(0);
+    }
+    else
+    {
+        SetValue(min_val_);  
+    }
+    
     MySwitch::Reset();
 }
 
-void MyEncoder::SetLinkLed( MyRgbLed *linked_led )
+void MyEncoder::LinkLed( MyRgbLed *linked_led )
 {
     encoder_linked_led_ = linked_led;
 

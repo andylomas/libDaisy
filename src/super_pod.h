@@ -6,6 +6,7 @@
 #include "daisy_seed.h"
 #include "myUtils/myEncoder.h"
 #include "myUtils/myRgbLed.h"
+//#include "myUtils/myPotentiometer.h"
 
 namespace daisy
 {
@@ -88,6 +89,9 @@ class SuperPod
     /** Stops Transfering data from the ADC */
     void StopAdc();
 
+    /** Returns number of audio channels */
+    int NumChannels() { return 2; }
+
     /** Call at the same frequency as controls are read for stable readings.*/
     void ProcessAnalogControls();
 
@@ -120,14 +124,25 @@ class SuperPod
     void SetLed(uint8_t idx, bool val);
     void SetLed(uint8_t idx, bool r, bool g, bool b);
     void SetLedValue(uint8_t idx, int val);
+    void SetLedFloat(uint8_t idx, float r, float g, float b);
+
+   /**
+       Dummy version to set encoder LED to match super_petal
+       \param idx Led Index
+     */
+    void SetEncoderLed(uint8_t idx, bool val) { SetLed(idx, val); }
+    void SetEncoderLed(uint8_t idx, bool r, bool g, bool b) { SetLed(idx, r, g, b); }
+    void SetEncoderLedValue(uint8_t idx, int val) { SetLedValue(idx, val); }
+    void SetEncoderLedFloat(uint8_t idx, float r, float g, float b) { SetLedFloat(idx, r, g, b); }
 
     DaisySeed seed;    /**< & */
 
     AnalogControl knob[NUM_KNOBS];
-    Switch        switches[NUM_SWITCHES];
-    Switch        buttons[NUM_BUTTONS];
-    MyEncoder     encoder[NUM_ENCODERS];
-    MyRgbLed      led[NUM_LEDS];
+    //MyPotentiometer knob[NUM_KNOBS];
+    Switch          switches[NUM_SWITCHES];
+    Switch          buttons[NUM_BUTTONS];
+    MyEncoder       encoder[NUM_ENCODERS];
+    MyRgbLed        led[NUM_LEDS];
 
   private:
     void InitSwitches();

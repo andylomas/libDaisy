@@ -88,6 +88,9 @@ class SuperPetal
     /** Stops Transfering data from the ADC */
     void StopAdc();
 
+    /** Returns number of audio channels */
+    int NumChannels() { return 2; }
+
     /** Call at the same frequency as controls are read for stable readings.*/
     void ProcessAnalogControls();
 

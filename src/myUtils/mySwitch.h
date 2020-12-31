@@ -3,7 +3,6 @@
 #ifndef DSY_MYSWITCH_H
 #define DSY_MYSWITCH_H
 
-//#include "daisy_core.h"
 #include "per/gpio.h"
 #include "myUtils/myRgbLed.h"
 

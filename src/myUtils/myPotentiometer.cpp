@@ -1,11 +1,13 @@
 // myPotentiometer.cpp
 #include "myUtils/myPotentiometer.h"
+#include "math.h"
 
 void MyPotentiometer::Init(const dsy_gpio_pin pin)
 {
-    pin_ = pin;
-    mode_ = 0;
-    sensitivity_ = 0.0f;
+    pin_.pin = pin;
+    pin_.mode = DSY_GPIO_MODE_ANALOG;
+    pin_.pull = DSY_GPIO_NOPULL;
+    dsy_gpio_init(&pin_);
 }
 
 void MyPotentiometer::SetRange(const float min_val, const float max_val)

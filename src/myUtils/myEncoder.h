@@ -17,9 +17,9 @@ public:
     inline void SetValueOnRising() { value_on_rising_ = true; value_on_falling_ = false; }
     inline void SetValueOnFalling() { value_on_rising_ = false; value_on_falling_ = true; }
     inline void SetValueOnRisingAndFalling() { value_on_rising_ = true; value_on_falling_ = true; }
-    virtual void SetLinkLed( MyRgbLed *linked_led );
-    inline void SetResetOnPressed(bool v = true) { reset_on_pressed_ = v; }
-    inline void SetWrapMode(bool mode) {wrap_mode_ = mode; }
+    virtual void LinkLed( MyRgbLed *linked_led );
+    inline void ResetOnPressed(bool v = true) { reset_on_pressed_ = v; }
+    inline void WrapMode(bool mode) {wrap_mode_ = mode; }
     void SetValue(const int16_t val);
     virtual void Debounce();
     virtual void Reset();

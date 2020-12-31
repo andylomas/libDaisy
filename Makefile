@@ -33,6 +33,7 @@ daisy_pod \
 daisy_patch \
 daisy_petal \
 super_petal \
+super_pod \
 daisy_field \
 daisy_versio \
 dev/sr_595 \
@@ -55,9 +56,9 @@ per/spi \
 per/uart \
 util/color \
 myUtils/myEncoder\
-myUtils/myLedController \
-myUtils/myRgbLed \
 myUtils/mySwitch \
+myUtils/myRgbLed \
+myUtils/myLedController \
 myUtils/myShiftedLCD
 
 ######################################
