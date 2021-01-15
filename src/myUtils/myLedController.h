@@ -6,7 +6,6 @@
 // Class for up to 8 RGB LEDs controlled using three shift registers
 // Data is communicated to the shift registers using shiftOut()
 
-//#include "daisy_core.h"
 #include "per/gpio.h"
 #include "myUtils/shiftOut.h"
 

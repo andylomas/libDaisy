@@ -3,7 +3,6 @@
 #ifndef DSY_MYENCODER_H
 #define DSY_MYENCODER_H
 
-//#include "daisy_core.h"
 #include "per/gpio.h"
 #include "myUtils/mySwitch.h"
 

@@ -5,7 +5,6 @@
 
 #define MAX_MAP_VALUES 32
 
-//#include "daisy_core.h"
 #include "per/gpio.h"
 #include "hid/ctrl.h"
 

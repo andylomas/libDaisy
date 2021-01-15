@@ -63,7 +63,6 @@ void MyLedController::Clear()
    
 void MyLedController::Update(bool force_update)
 {
-    // Should do 
     uint32_t cur_data = r_data_ + (g_data_ << 8) + (b_data_ << 16);
 
     if (force_update || cur_data != prev_data_)

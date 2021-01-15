@@ -3,7 +3,6 @@
 #ifndef DSY_MYSHIFTEDLCD_H
 #define DSY_MYSHIFTEDLCD_H
 
-//#include "daisy_core.h"
 #include "per/gpio.h"
 #include "per/tim.h"
 #include "myUtils/shiftOut.h"
