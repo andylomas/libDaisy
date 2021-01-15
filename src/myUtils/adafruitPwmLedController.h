@@ -8,12 +8,19 @@
 
 #include <math.h>
 #include "per/gpio.h"
-#include "myUtils/shiftOut.h"
+#include "daisy_core.h"
 
+#define DATA_BUFFER_SIZE 28
+ 
 class AdafruitPwmLedController
 {
 public:
+    AdafruitPwmLedController();
     void Init(const dsy_gpio_pin pin_data, const dsy_gpio_pin pin_clock);
+    void Init(const dsy_gpio_pin pin_data, const dsy_gpio_pin pin_clock, const dsy_gpio_pin pin_cs);
+    void InitSpi();
+    void InitSpi(const dsy_gpio_pin pin_cs);
+    void SetDataBufferBits(uint8_t v, uint8_t num_bits, uint8_t pos);
     void SetGamma(const float gamma);
     void SetGlobalBrightness(const float r, const float g, const float b);
     void Set(uint8_t n, const bool r, const bool g, const bool b);
@@ -27,13 +34,11 @@ public:
 private:
     dsy_gpio pin_data_;
     dsy_gpio pin_clock_;
-    uint8_t global_brightness_r_;
-    uint8_t global_brightness_g_;
-    uint8_t global_brightness_b_;
-    uint16_t led_brightness_r_[4];
-    uint16_t led_brightness_g_[4];
-    uint16_t led_brightness_b_[4];
+    dsy_gpio pin_cs_;
     float gamma_;
+    bool use_spi_;
+    bool use_cs_;
+    uint8_t data_buffer_[DATA_BUFFER_SIZE];
 };
 
 #endif
