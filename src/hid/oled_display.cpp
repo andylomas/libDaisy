@@ -3,6 +3,7 @@
 #include "per/spi.h"
 #include "per/gpio.h"
 #include "sys/system.h"
+#include <string.h>
 
 
 // Set up for now with:
@@ -77,6 +78,7 @@
 using namespace daisy;
 
 static uint8_t SSD1309_Buffer[SSD1309_WIDTH * SSD1309_HEIGHT / 8];
+static uint8_t SSD1309_Buffer_Prev[SSD1309_WIDTH * SSD1309_HEIGHT / 8];
 static uint32_t Buffer_Checksums[SSD1309_HEIGHT / 8];
 
 typedef struct
@@ -93,6 +95,8 @@ static SSD1309_t SSD1309;
 
 void OledDisplay::Init(dsy_gpio_pin* pin_cfg)
 {
+    using_smart_update = false;
+
     // Initialize both GPIO
     pin_dc.mode = DSY_GPIO_MODE_OUTPUT_PP;
     pin_dc.pin  = pin_cfg[OledDisplay::DATA_COMMAND];
@@ -172,16 +176,18 @@ void OledDisplay::Reset()
 
 void OledDisplay::Fill(bool on)
 {
-    for(size_t i = 0; i < sizeof(SSD1309_Buffer); i++)
-    {
-        SSD1309_Buffer[i] = on ? 0xff : 0x00;
-    }
+    memset(SSD1309_Buffer, on ? 0xff : 0x00, sizeof(SSD1309_Buffer));
 }
 
 void OledDisplay::Update(uint8_t sub_buffers)
 {
-    uint8_t i;
-    for(i = 0; i < 8; i++)
+    if (using_smart_update)
+    {
+        SmartUpdate(sub_buffers);
+        return;
+    }
+
+    for(uint8_t i = 0; i < 8; i++)
     {
         if (sub_buffers & (1 << i))
         {
@@ -200,6 +206,56 @@ void OledDisplay::DirtyUpdate()
 
     uint8_t sub_buffer_flags = CalcBufferChecksums();
     Update(sub_buffer_flags);
+}
+
+
+void OledDisplay::SmartUpdate(uint8_t sub_buffers)
+{
+    // Compares current with previous buffers, find first and last bytes
+    // that have changed in each page.
+
+    for(uint8_t i = 0; i < 8; i++)
+    {
+        if (sub_buffers & (1 << i))
+        {
+            int8_t first_changed_byte = -1;
+            int8_t last_changed_byte = -1;
+            uint32_t page_start_pos = SSD1309_WIDTH * i;
+            for(uint8_t j = 0; j < SSD1309_WIDTH; j++)
+            {
+                if (SSD1309_Buffer[page_start_pos + j] != SSD1309_Buffer_Prev[page_start_pos + j])
+                {
+                    if (first_changed_byte < 0)
+                    {
+                        first_changed_byte = j;
+                    }
+
+                    last_changed_byte = j;
+                }
+            }
+
+            if (first_changed_byte > 0)
+            {
+                SendCommand(0xB0 + i);
+                SendCommand(0x00 + first_changed_byte % 16);
+                SendCommand(0x10 + first_changed_byte / 16);
+                uint8_t num_bytes_to_copy = last_changed_byte - first_changed_byte + 1;
+                uint32_t first_byte_offset = page_start_pos + first_changed_byte;
+                SendData(&SSD1309_Buffer[first_byte_offset], num_bytes_to_copy);
+                memcpy(SSD1309_Buffer_Prev + first_byte_offset, 
+                       SSD1309_Buffer + first_byte_offset,
+                       num_bytes_to_copy);
+            }
+        }
+    }
+}
+
+void OledDisplay::InitSmartUpdate()
+{
+    // Synchronizes the values in SSD1309_Buffer_Prev with the values in SSD1309_Buffer
+    memcpy(SSD1309_Buffer_Prev, SSD1309_Buffer, sizeof(SSD1309_Buffer));
+
+    using_smart_update = true;
 }
 
 void OledDisplay::DrawPixel(uint_fast8_t x, uint_fast8_t y, bool on)

@@ -164,13 +164,20 @@ class OledDisplay
     */
     void DirtyUpdate();
 
-    uint8_t CalcBufferChecksums();
+    /** 
+    Compares current with previous buffers, find first and last bytes that have
+    changed in each page.
+    */
+    void SmartUpdate(uint8_t sub_buffers=255);
+    void InitSmartUpdate();
 
   private:
     void Reset();
     void SendCommand(uint8_t byte);
     void SendData(uint8_t* buff, size_t size);
+    uint8_t CalcBufferChecksums();
     
+    bool using_smart_update;
 };
 /** @} */
 } // namespace daisy
