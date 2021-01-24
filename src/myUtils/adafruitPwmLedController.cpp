@@ -130,20 +130,25 @@ void AdafruitPwmLedController::SetGamma(const float gamma)
 {
     gamma_ = gamma;
 }
+
+void AdafruitPwmLedController::SetRaw(uint8_t n, const uint16_t r, const uint16_t g, const uint16_t b)
+{
+    uint8_t buffer_pos = 6 * n;
+    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 1] = r % 256;
+    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 2] = r / 256;
+    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 3] = g % 256;
+    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 4] = g / 256;
+    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 5] = b % 256;
+    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 6] = b / 256;   
+}
+
     
 void AdafruitPwmLedController::Set(uint8_t n, const bool r, const bool g, const bool b)
 {
     uint16_t led_brightness_r = r ? LED_MAX_BRIGHTNESS : 0;
     uint16_t led_brightness_g = g ? LED_MAX_BRIGHTNESS : 0;
     uint16_t led_brightness_b = b ? LED_MAX_BRIGHTNESS : 0;
-
-    uint8_t buffer_pos = 6 * n;
-    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 1] = led_brightness_r % 256;
-    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 2] = led_brightness_r / 256;
-    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 3] = led_brightness_g % 256;
-    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 4] = led_brightness_g / 256;
-    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 5] = led_brightness_b % 256;
-    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 6] = led_brightness_b / 256;
+    SetRaw(n, led_brightness_r, led_brightness_g, led_brightness_b);
 }
 
 void AdafruitPwmLedController::Set(uint8_t n, const bool v)
@@ -161,14 +166,7 @@ void AdafruitPwmLedController::SetFloat(uint8_t n, float r, float g, float b)
     uint16_t led_brightness_r = powf(r, gamma_) * LED_MAX_BRIGHTNESS;
     uint16_t led_brightness_g = powf(g, gamma_) * LED_MAX_BRIGHTNESS;
     uint16_t led_brightness_b = powf(b, gamma_) * LED_MAX_BRIGHTNESS;
-
-    uint8_t buffer_pos = 6 * n;
-    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 1] = led_brightness_r % 256;
-    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 2] = led_brightness_r / 256;
-    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 3] = led_brightness_g % 256;
-    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 4] = led_brightness_g / 256;
-    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 5] = led_brightness_b % 256;
-    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 6] = led_brightness_b / 256;
+    SetRaw(n, led_brightness_r, led_brightness_g, led_brightness_b);
 }
 
 void AdafruitPwmLedController::SetFloat(uint8_t n, float v)

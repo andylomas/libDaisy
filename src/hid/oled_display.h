@@ -157,12 +157,20 @@ class OledDisplay
     Writes the current display buffer to the OLED device using SPI or I2C depending on 
     how the object was initialized.
     */
-    void Update();
+    void Update(uint8_t sub_buffers=255);
+
+    /** 
+    Calculates checksums for sub-buffers, and updates those that have changed.
+    */
+    void DirtyUpdate();
+
+    uint8_t CalcBufferChecksums();
 
   private:
     void Reset();
     void SendCommand(uint8_t byte);
     void SendData(uint8_t* buff, size_t size);
+    
 };
 /** @} */
 } // namespace daisy

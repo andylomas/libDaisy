@@ -23,6 +23,7 @@ public:
     void SetDataBufferBits(uint8_t v, uint8_t num_bits, uint8_t pos);
     void SetGamma(const float gamma);
     void SetGlobalBrightness(const float r, const float g, const float b);
+    void SetRaw(uint8_t n, const uint16_t r, const uint16_t g, const uint16_t b);
     void Set(uint8_t n, const bool r, const bool g, const bool b);
     void Set(uint8_t n, const bool v);
     void SetValue(uint8_t n, const int v);

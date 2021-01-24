@@ -77,6 +77,7 @@
 using namespace daisy;
 
 static uint8_t SSD1309_Buffer[SSD1309_WIDTH * SSD1309_HEIGHT / 8];
+static uint32_t Buffer_Checksums[SSD1309_HEIGHT / 8];
 
 typedef struct
 {
@@ -160,6 +161,7 @@ void OledDisplay::Init(dsy_gpio_pin* pin_cfg)
 
     SSD1309.Initialized = 1;
 }
+
 void OledDisplay::Reset()
 {
     dsy_gpio_write(&pin_reset, 0);
@@ -176,16 +178,28 @@ void OledDisplay::Fill(bool on)
     }
 }
 
-void OledDisplay::Update(void)
+void OledDisplay::Update(uint8_t sub_buffers)
 {
     uint8_t i;
     for(i = 0; i < 8; i++)
     {
-        SendCommand(0xB0 + i);
-        SendCommand(0x00);
-        SendCommand(0x10);
-        SendData(&SSD1309_Buffer[SSD1309_WIDTH * i], SSD1309_WIDTH);
+        if (sub_buffers & (1 << i))
+        {
+            SendCommand(0xB0 + i);
+            SendCommand(0x00);
+            SendCommand(0x10);
+            SendData(&SSD1309_Buffer[SSD1309_WIDTH * i], SSD1309_WIDTH);
+        }
     }
+}
+
+void OledDisplay::DirtyUpdate()
+{
+    // Calculates checksums for each sub-buffer, and only
+    // updates the display for rows where the checksum has changed
+
+    uint8_t sub_buffer_flags = CalcBufferChecksums();
+    Update(sub_buffer_flags);
 }
 
 void OledDisplay::DrawPixel(uint_fast8_t x, uint_fast8_t y, bool on)
@@ -440,4 +454,34 @@ void OledDisplay::SendData(uint8_t* buff, size_t size)
 {
     dsy_gpio_write(&pin_dc, 1);
     h_spi.BlockingTransmit(buff, size);
+}
+
+uint8_t OledDisplay::CalcBufferChecksums()
+{
+    // Calculates new values for the buffer checksums, and returns
+    // flag value indicating which ones have changed
+    uint32_t *ptr_unint32 = (uint32_t *)SSD1309_Buffer;
+
+    uint8_t result = 0;
+    uint8_t vals_per_row = SSD1309_WIDTH / 4;
+    for (uint8_t i = 0; i < 8; i++)
+    {
+        uint32_t old_checksum = Buffer_Checksums[i];
+
+        uint32_t new_checksum = 0;
+        for (int j = 0; j < vals_per_row; j++)
+        {
+            new_checksum += *ptr_unint32;
+            ptr_unint32++;
+        }
+
+        Buffer_Checksums[i] = new_checksum;
+
+        if (new_checksum != old_checksum)
+        {
+            result |= 1 << i;
+        }
+    }
+
+    return result;
 }
