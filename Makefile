@@ -55,6 +55,7 @@ per/i2c \
 per/spi \
 per/uart \
 util/color \
+myUtils/myUart\
 myUtils/myEncoder\
 myUtils/mySwitch \
 myUtils/myRgbLed \
