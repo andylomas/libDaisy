@@ -24,6 +24,10 @@ namespace daisy
     Uart Peripheral
     @author shensley
     @date March 2020
+
+    Modified by
+    @author Andy Lomas
+    @date January 2021
     */
 
 enum UartInstance

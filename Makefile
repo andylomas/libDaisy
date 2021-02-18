@@ -61,7 +61,7 @@ myUtils/mySwitch \
 myUtils/myRgbLed \
 myUtils/myLedController \
 myUtils/myShiftedLCD \
-myUtils/adafruitPwmLedController
+myUtils/adafruitLedController
 
 ######################################
 # building variables

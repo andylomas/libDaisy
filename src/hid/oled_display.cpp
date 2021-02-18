@@ -93,7 +93,7 @@ static dsy_gpio  pin_reset, pin_dc;
 static SSD1309_t SSD1309;
 
 
-void OledDisplay::Init(dsy_gpio_pin* pin_cfg)
+void OledDisplay::Init(dsy_gpio_pin* pin_cfg, bool nss_hard_output)
 {
     using_smart_update = false;
 
@@ -104,8 +104,10 @@ void OledDisplay::Init(dsy_gpio_pin* pin_cfg)
     pin_reset.mode = DSY_GPIO_MODE_OUTPUT_PP;
     pin_reset.pin  = pin_cfg[OledDisplay::RESET];
     dsy_gpio_init(&pin_reset);
-    // Initialize SPI
-    h_spi.Init();
+    // Initialize SPI with nss_hard_output indicating whether we are using the
+    // SPI hardware CS line or using software (in which case we need to connect
+    // CS on display to GND and gate the clock with a GPIO CS pin)
+    h_spi.Init(nss_hard_output);
     // Reset and Configure OLED.
     Reset();
     //SendCommand(0xAE); // display off

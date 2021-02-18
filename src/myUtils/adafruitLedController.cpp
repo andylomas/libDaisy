@@ -1,5 +1,5 @@
 // adafruitPwmLedController.cpp
-#include "myUtils/AdafruitPwmLedController.h"
+#include "myUtils/AdafruitLedController.h"
 #include "myUtils/shiftOut.h"
 #include "per/spi.h"
 
@@ -8,7 +8,7 @@
 
 static daisy::SpiHandle h_spi;
 
-AdafruitPwmLedController::AdafruitPwmLedController()
+AdafruitLedController::AdafruitLedController()
 {
     // Constructor
 
@@ -36,7 +36,7 @@ AdafruitPwmLedController::AdafruitPwmLedController()
     use_spi_ = false;
 }
 
-void AdafruitPwmLedController::Init(const dsy_gpio_pin pin_data, const dsy_gpio_pin pin_clock)
+void AdafruitLedController::Init(const dsy_gpio_pin pin_data, const dsy_gpio_pin pin_clock)
 {
     // Initialize to use ShiftOut
     pin_data_.pin = pin_data;
@@ -50,7 +50,7 @@ void AdafruitPwmLedController::Init(const dsy_gpio_pin pin_data, const dsy_gpio_
     Update();
 }
 
-void AdafruitPwmLedController::Init(const dsy_gpio_pin pin_data, const dsy_gpio_pin pin_clock, const dsy_gpio_pin pin_cs)
+void AdafruitLedController::Init(const dsy_gpio_pin pin_data, const dsy_gpio_pin pin_clock, const dsy_gpio_pin pin_cs)
 {
     // Version of Init() with CS pin specified
 
@@ -64,7 +64,7 @@ void AdafruitPwmLedController::Init(const dsy_gpio_pin pin_data, const dsy_gpio_
     Init(pin_data, pin_clock);
 }
 
-void AdafruitPwmLedController::InitSpi()
+void AdafruitLedController::InitSpi()
 {
     // Initialize SPI
     h_spi.Init();
@@ -73,7 +73,7 @@ void AdafruitPwmLedController::InitSpi()
     Update();
 }
 
-void AdafruitPwmLedController::InitSpi(const dsy_gpio_pin pin_cs)
+void AdafruitLedController::InitSpi(const dsy_gpio_pin pin_cs)
 {
     // Version of InitSpi() with CS pin specified
 
@@ -87,7 +87,7 @@ void AdafruitPwmLedController::InitSpi(const dsy_gpio_pin pin_cs)
     InitSpi();
 }
 
-void AdafruitPwmLedController::SetDataBufferBits(uint8_t v, uint8_t num_bits, uint8_t pos)
+void AdafruitLedController::SetDataBufferBits(uint8_t v, uint8_t num_bits, uint8_t pos)
 {
     // Note: we assume that we're setting at most 8 bits
     uint8_t byte_pos = pos / 8;
@@ -115,7 +115,7 @@ void AdafruitPwmLedController::SetDataBufferBits(uint8_t v, uint8_t num_bits, ui
     }
 }
 
-void AdafruitPwmLedController::SetGlobalBrightness(const float r, const float g, const float b)
+void AdafruitLedController::SetGlobalBrightness(const float r, const float g, const float b)
 {
     uint8_t global_brightness_r = powf(r, gamma_) * GLOBAL_MAX_BRIGHTNESS;
     uint8_t global_brightness_g = powf(g, gamma_) * GLOBAL_MAX_BRIGHTNESS;
@@ -126,12 +126,12 @@ void AdafruitPwmLedController::SetGlobalBrightness(const float r, const float g,
     SetDataBufferBits(global_brightness_b, 7, 206);
 }
 
-void AdafruitPwmLedController::SetGamma(const float gamma)
+void AdafruitLedController::SetGamma(const float gamma)
 {
     gamma_ = gamma;
 }
 
-void AdafruitPwmLedController::SetRaw(uint8_t n, const uint16_t r, const uint16_t g, const uint16_t b)
+void AdafruitLedController::SetRaw(uint8_t n, const uint16_t r, const uint16_t g, const uint16_t b)
 {
     uint8_t buffer_pos = 6 * n;
     data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 1] = r % 256;
@@ -143,7 +143,7 @@ void AdafruitPwmLedController::SetRaw(uint8_t n, const uint16_t r, const uint16_
 }
 
     
-void AdafruitPwmLedController::Set(uint8_t n, const bool r, const bool g, const bool b)
+void AdafruitLedController::Set(uint8_t n, const bool r, const bool g, const bool b)
 {
     uint16_t led_brightness_r = r ? LED_MAX_BRIGHTNESS : 0;
     uint16_t led_brightness_g = g ? LED_MAX_BRIGHTNESS : 0;
@@ -151,17 +151,17 @@ void AdafruitPwmLedController::Set(uint8_t n, const bool r, const bool g, const 
     SetRaw(n, led_brightness_r, led_brightness_g, led_brightness_b);
 }
 
-void AdafruitPwmLedController::Set(uint8_t n, const bool v)
+void AdafruitLedController::Set(uint8_t n, const bool v)
 {
     Set(n, v, v, v);
 }
 
-void AdafruitPwmLedController::SetValue(uint8_t n, const int v)
+void AdafruitLedController::SetValue(uint8_t n, const int v)
 {
     Set(n, v & 1, v & 2, v & 4);
 }
 
-void AdafruitPwmLedController::SetFloat(uint8_t n, float r, float g, float b)
+void AdafruitLedController::SetFloat(uint8_t n, float r, float g, float b)
 {
     uint16_t led_brightness_r = powf(r, gamma_) * LED_MAX_BRIGHTNESS;
     uint16_t led_brightness_g = powf(g, gamma_) * LED_MAX_BRIGHTNESS;
@@ -169,12 +169,12 @@ void AdafruitPwmLedController::SetFloat(uint8_t n, float r, float g, float b)
     SetRaw(n, led_brightness_r, led_brightness_g, led_brightness_b);
 }
 
-void AdafruitPwmLedController::SetFloat(uint8_t n, float v)
+void AdafruitLedController::SetFloat(uint8_t n, float v)
 {
     SetFloat(n, v);
 }
 
-void AdafruitPwmLedController::Clear()
+void AdafruitLedController::Clear()
 {
     for (uint8_t i = 0; i < 4; i ++)
     {
@@ -184,7 +184,7 @@ void AdafruitPwmLedController::Clear()
     Update();
 }
    
-void AdafruitPwmLedController::Update()
+void AdafruitLedController::Update()
 {
     // If we're using a CS pin, set it high
     if (use_cs_)

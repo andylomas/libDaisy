@@ -15,7 +15,7 @@ static void Error_Handler()
     asm("bkpt 255");
 }
 
-void SpiHandle::Init()
+void SpiHandle::Init(bool nss_hard_output)
 {
     hspi1.Instance               = SPI1;
     hspi1.Init.Mode              = SPI_MODE_MASTER;
@@ -23,7 +23,8 @@ void SpiHandle::Init()
     hspi1.Init.DataSize          = SPI_DATASIZE_8BIT;
     hspi1.Init.CLKPolarity       = SPI_POLARITY_LOW;
     hspi1.Init.CLKPhase          = SPI_PHASE_1EDGE;
-    hspi1.Init.NSS               = SPI_NSS_HARD_OUTPUT;
+    hspi1.Init.NSS 
+        = nss_hard_output ? SPI_NSS_HARD_OUTPUT : SPI_NSS_SOFT;
     hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
     hspi1.Init.FirstBit          = SPI_FIRSTBIT_MSB;
     hspi1.Init.TIMode            = SPI_TIMODE_DISABLE;

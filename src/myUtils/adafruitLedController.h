@@ -1,7 +1,7 @@
 // adafruitPwmLedController.h
 #pragma once
-#ifndef DSY_MYLEDCONTROLLER_H
-#define DSY_MYLEDCONTROLLER_H
+#ifndef DSY_ADAFRUITLEDCONTROLLER_H
+#define DSY_ADAFRUITLEDCONTROLLER_H
 
 // Class for controlling LEDs using Adafruit 12 Channel
 // 16 bit PWM LED Controller
@@ -12,10 +12,10 @@
 
 #define DATA_BUFFER_SIZE 28
  
-class AdafruitPwmLedController
+class AdafruitLedController
 {
 public:
-    AdafruitPwmLedController();
+    AdafruitLedController();
     void Init(const dsy_gpio_pin pin_data, const dsy_gpio_pin pin_clock);
     void Init(const dsy_gpio_pin pin_data, const dsy_gpio_pin pin_clock, const dsy_gpio_pin pin_cs);
     void InitSpi();

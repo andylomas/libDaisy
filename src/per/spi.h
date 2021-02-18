@@ -43,7 +43,7 @@ class SpiHandle
     ~SpiHandle() {}
 
     /** Initializes handler */
-    void Init();
+    void Init(bool nss_hard_output = true);
 
     /** Blocking transmit 
     \param *buff input buffer

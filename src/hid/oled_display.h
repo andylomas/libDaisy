@@ -51,7 +51,7 @@ class OledDisplay
     Takes an argument for the pin cfg
     \param pin_cfg should be a pointer to an array of OledDisplay::NUM_PINS dsy_gpio_pins
     */
-    void Init(dsy_gpio_pin* pin_cfg);
+    void Init(dsy_gpio_pin* pin_cfg, bool nss_hard_output = true);
 
     /** 
     Fills the entire display with either on/off.
@@ -170,9 +170,10 @@ class OledDisplay
     */
     void SmartUpdate(uint8_t sub_buffers=255);
     void InitSmartUpdate();
+    
+    void Reset();
 
   private:
-    void Reset();
     void SendCommand(uint8_t byte);
     void SendData(uint8_t* buff, size_t size);
     uint8_t CalcBufferChecksums();
