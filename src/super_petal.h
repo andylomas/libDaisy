@@ -5,6 +5,7 @@
 
 #include "daisy_seed.h"
 #include "myUtils/shiftOut.h"
+#include "myUtils/mySwitch.h"
 #include "myUtils/myLedController.h"
 #include "myUtils/myEncoder.h"
 #include "myUtils/myShiftedLCD.h"
@@ -142,12 +143,13 @@ class SuperPetal
     void SetEncoderLed(uint8_t idx, bool val);
     void SetEncoderLed(uint8_t idx, bool r, bool g, bool b);
     void SetEncoderLedValue(uint8_t idx, int val);
-
+    void SetOnboardLed(bool val);
+    
     DaisySeed seed;    /**< & */
 
     AnalogControl knob[NUM_KNOBS]; /**< & */
     AnalogControl expression;      /**< & */
-    Switch        switches[NUM_SWITCHES] /**< & */;
+    MySwitch      switches[NUM_SWITCHES] /**< & */;
     MyEncoder     encoder[NUM_ENCODERS];
 
     MyLedController led_controller;

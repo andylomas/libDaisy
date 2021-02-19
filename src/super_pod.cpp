@@ -157,7 +157,7 @@ void SuperPod::ProcessDigitalControls()
 
     for(size_t i = 0; i < NUM_BUTTONS; i++)
     {
-        buttons[i].Debounce();
+        button[i].Debounce();
     }
 }
 
@@ -197,6 +197,11 @@ void SuperPod::SetLedFloat(uint8_t idx, float r, float g, float b)
     led[idx].SetFloat(r, g, b);
 }
 
+void SuperPod::SetOnboardLed(bool val)
+{
+    seed.SetLed(val);
+}
+
 void SuperPod::InitSwitches()
 {
     uint8_t switch_pin_numbers[NUM_SWITCHES] = {
@@ -220,7 +225,7 @@ void SuperPod::InitSwitches()
 
     for(size_t i = 0; i < NUM_BUTTONS; i++)
     {
-        buttons[i].Init(seed.GetPin(button_pin_numbers[i]), AudioCallbackRate());
+        button[i].Init(seed.GetPin(button_pin_numbers[i]), AudioCallbackRate());
     }    
 }
 

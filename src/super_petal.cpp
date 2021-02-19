@@ -222,6 +222,11 @@ void SuperPetal::SetEncoderLedValue(uint8_t idx, int val)
     led_controller.SetValue(idx + 4, val);
 }
 
+void SuperPetal::SetOnboardLed(bool val)
+{
+    seed.SetLed(val);
+}
+
 void SuperPetal::InitSwitches()
 {
     uint8_t pin_numbers[NUM_SWITCHES] = {

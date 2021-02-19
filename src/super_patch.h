@@ -1,34 +1,33 @@
 // super_pod.h
 #pragma once
-#ifndef SUPER_POD_H
-#define SUPER_POD_H /**< & */
+#ifndef SUPER_PATCH_H
+#define SUPER_PATCH_H /**< & */
 
 #include "daisy_seed.h"
-#include "myUtils/mySwitch.h"
 #include "myUtils/myEncoder.h"
-#include "myUtils/myRgbLed.h"
-//#include "myUtils/myPotentiometer.h"
+#include "myUtils/mySwitch.h"
+#include "myUtils/AdafruitLedController.h"
 
 namespace daisy
 {
 /**
-    @brief Helpers and hardware definitions for daisy petal.
+@brief Helpers and hardware definitions for daisy petal.
     @ingroup boards
 */
 
-#define NUM_SWITCHES 4
-#define NUM_BUTTONS 4
-#define NUM_KNOBS 12
+#define NUM_SWITCHES 0
+#define NUM_BUTTONS 2
+#define NUM_KNOBS 8
 #define NUM_ENCODERS 2
-#define NUM_LEDS 2
+#define NUM_LEDS 4
 
-class SuperPod
+class SuperPatch
 {
-  public:
+public:
     /** Constructor */
-    SuperPod() {}
+    SuperPatch() {}
     /** Destructor */
-    ~SuperPod() {}
+    ~SuperPatch() {}
 
     /** Initialize daisy petal */
     void Init();
@@ -126,8 +125,9 @@ class SuperPod
     void SetLed(uint8_t idx, bool r, bool g, bool b);
     void SetLedValue(uint8_t idx, int val);
     void SetLedFloat(uint8_t idx, float r, float g, float b);
+    void SetOnboardLed(bool val);
 
-   /**
+    /**
        Dummy version to set encoder LED to match super_petal
        \param idx Led Index
      */
@@ -135,22 +135,22 @@ class SuperPod
     void SetEncoderLed(uint8_t idx, bool r, bool g, bool b) { SetLed(idx, r, g, b); }
     void SetEncoderLedValue(uint8_t idx, int val) { SetLedValue(idx, val); }
     void SetEncoderLedFloat(uint8_t idx, float r, float g, float b) { SetLedFloat(idx, r, g, b); }
-    void SetOnboardLed(bool val);
 
     DaisySeed seed;    /**< & */
 
     AnalogControl knob[NUM_KNOBS];
-    //MyPotentiometer knob[NUM_KNOBS];
-    MySwitch          switches[NUM_SWITCHES];
-    MySwitch          button[NUM_BUTTONS];
-    MyEncoder       encoder[NUM_ENCODERS];
-    MyRgbLed        led[NUM_LEDS];
+    MySwitch button[NUM_BUTTONS];
+    MyEncoder encoder[NUM_ENCODERS];
+    OledDisplay display;
+    AdafruitLedController led_controller;
 
-  private:
+private:
     void InitSwitches();
     void InitEncoders();
     void InitLeds();
     void InitAnalogControls();
+    void InitOledDisplay();
+    void InitLedController();
 
     inline uint16_t* adc_ptr(const uint8_t chn) { return seed.adc.GetPtr(chn); }
 };

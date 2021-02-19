@@ -9,7 +9,7 @@
 class MySwitch
 {
 public:
-    void Init(const dsy_gpio_pin pin, const float update_rate, const bool invert);
+    void Init(const dsy_gpio_pin pin, const float update_rate, const bool invert = true);
     inline void SetMaxCount(const int16_t m) { max_count_ = m; }
     inline void CountOnRising() { count_on_rising_ = true; count_on_falling_ = false; }
     inline void CountOnFalling() { count_on_rising_ = false; count_on_falling_ = true; }

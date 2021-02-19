@@ -13,6 +13,8 @@ public:
         const dsy_gpio_pin pinA, const dsy_gpio_pin pinB, const dsy_gpio_pin pin_click,
         const float update_rate, const int16_t min_val=-32768, const int16_t max_val=32767);
     void SetRange(const int16_t min_val, const int16_t max_val);
+    inline int16_t MinVal() { return min_val_; }
+    inline int16_t MaxVal() { return max_val_; }
     inline void SetValueOnRising() { value_on_rising_ = true; value_on_falling_ = false; }
     inline void SetValueOnFalling() { value_on_rising_ = false; value_on_falling_ = true; }
     inline void SetValueOnRisingAndFalling() { value_on_rising_ = true; value_on_falling_ = true; }
@@ -22,8 +24,8 @@ public:
     void SetValue(const int16_t val);
     virtual void Debounce();
     virtual void Reset();
-    inline int32_t Increment() { return inc_; }
-    inline int32_t Value() { return val_; }
+    inline int16_t Increment() { return inc_; }
+    inline int16_t Value() { return val_; }
     inline bool ValueChanged() { return inc_ != 0; }
     inline int Transitions() { return transitions_; }
     inline int CurState() { return transitions_ & 0b11; }
