@@ -20,7 +20,7 @@ namespace daisy
 
 #define NUM_SWITCHES 0
 #define NUM_BUTTONS 2
-#define NUM_KNOBS 10
+#define NUM_KNOBS 8
 #define NUM_ENCODERS 2
 #define NUM_LEDS 4
 #define NUM_BANANAS 6
@@ -116,13 +116,13 @@ public:
         ProcessDigitalControls();
     }
 
-    /** Sets the output of DAC 1 to a value between 0-4095 that corresponds to 0-5V */
-    void SetDacOutRaw1(uint16_t val);
-    void SetDacOut1(float val);
+    // /** Sets the output of DAC 1 to a value between 0-4095 that corresponds to 0-5V */
+    // void SetDacOutRaw1(uint16_t val);
+    // void SetDacOut1(float val);
 
-    /** Sets the output of DAC 2 to a value between 0-4095 that corresponds to 0-5V */
-    void SetDacOutRaw2(uint16_t val);
-    void SetDacOut2(float val);
+    // /** Sets the output of DAC 2 to a value between 0-4095 that corresponds to 0-5V */
+    // void SetDacOutRaw2(uint16_t val);
+    // void SetDacOut2(float val);
 
     /** Get value per knob.
     \param k Which knob to get
@@ -180,6 +180,7 @@ private:
 
     inline uint16_t* adc_ptr(const uint8_t chn) { return seed.adc.GetPtr(chn); }
     std::vector<uint8_t> banana_adc_list;
+    uint8_t num_banana_adcs;
 };
 
 } // namespace daisy

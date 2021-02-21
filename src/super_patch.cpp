@@ -56,6 +56,7 @@ void SuperPatch::Init(BananaConfig *banana_config)
     InitSwitches();
     InitEncoders();
     InitAnalogControls();
+    InitDac();
     InitOledDisplay();
     InitLedController();
     SetAudioBlockSize(48);
@@ -136,35 +137,40 @@ void SuperPatch::ProcessAnalogControls()
     for(size_t i = 0; i < NUM_KNOBS; i++)
     {
         knob[i].Process();
-        // knob[i].Debounce();
+    }
+
+    for (uint8_t i = 0; i < num_banana_adcs; i++)
+    {
+        uint8_t banana_index = banana_adc_list[i];
+        banana[banana_index].analog_input.Process();
     }
 }
 
-void SuperPatch::SetDacOutRaw1(uint16_t val)
-{
-    // Assumes that we're using 12bit DAC, so range is 0-4095
-    val = (val < 0.) ? 0 : (val > 4095) ? 4095 : val;
-    dsy_dac_write(DSY_DAC_CHN1, val);
-}
+// void SuperPatch::SetDacOutRaw1(uint16_t val)
+// {
+//     // Assumes that we're using 12bit DAC, so range is 0-4095
+//     val = (val < 0.) ? 0 : (val > 4095) ? 4095 : val;
+//     dsy_dac_write(DSY_DAC_CHN1, val);
+// }
 
-void SuperPatch::SetDacOut1(float val)
-{  
-    // Assumes that we're using 12bit DAC, so range is 0-4095
-    SetDacOutRaw1((int) (4095.f * val));
-}
+// void SuperPatch::SetDacOut1(float val)
+// {  
+//     // Assumes that we're using 12bit DAC, so range is 0-4095
+//     SetDacOutRaw1((int) (4095.f * val));
+// }
 
-void SuperPatch::SetDacOutRaw2(uint16_t val)
-{
-    // Assumes that we're using 12bit DAC, so range is 0-4095
-    val = (val < 0.) ? 0 : (val > 4095) ? 4095 : val;
-    dsy_dac_write(DSY_DAC_CHN2, val);
-}
+// void SuperPatch::SetDacOutRaw2(uint16_t val)
+// {
+//     // Assumes that we're using 12bit DAC, so range is 0-4095
+//     val = (val < 0.) ? 0 : (val > 4095) ? 4095 : val;
+//     dsy_dac_write(DSY_DAC_CHN2, val);
+// }
 
-void SuperPatch::SetDacOut2(float val)
-{  
-    // Assumes that we're using 12bit DAC, so range is 0-4095
-    SetDacOutRaw2((int) (4095.f * val));
-}
+// void SuperPatch::SetDacOut2(float val)
+// {  
+//     // Assumes that we're using 12bit DAC, so range is 0-4095
+//     SetDacOutRaw2((int) (4095.f * val));
+//}
 
 float SuperPatch::GetKnobValue(uint8_t k)
 {
@@ -286,6 +292,7 @@ void SuperPatch::InitBananas(BananaConfig *banana_config)
                 {
                     // In InitDac() we check which bananas are being used as analog outputs
                     // Don't need to do anything here as the mode has already been set
+                    banana[i].dac_chn = (i == 0) ? 1 : 2;                    
                 }
                 else
                 {
@@ -382,7 +389,7 @@ void SuperPatch::InitEncoders()
 void SuperPatch::InitAnalogControls()
 {
     // Set order of ADCs based on CHANNEL NUMBER + ADCs needed for Banana plugs
-    uint8_t num_banana_adcs = banana_adc_list.size();
+    num_banana_adcs = banana_adc_list.size();
     AdcChannelConfig cfg[NUM_KNOBS + num_banana_adcs];
 
     // Init with Single Pins
@@ -421,7 +428,7 @@ void SuperPatch::InitAnalogControls()
 void SuperPatch::InitDac()
 {
     bool dac1_used = (banana[0].config.mode == ANALOG_OUTPUT);
-    bool dac2_used = (banana[1].config.mode == ANALOG_OUTPUT);
+    bool dac2_used = (banana[2].config.mode == ANALOG_OUTPUT);
 
     if (dac1_used & dac2_used)
     {

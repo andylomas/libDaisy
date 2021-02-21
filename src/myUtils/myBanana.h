@@ -27,11 +27,16 @@ struct BananaConfig {
     uint32_t baud_rate = 115200;
 };
 
-struct MyBanana
+class MyBanana
 {
+public:
+    float Value();
+    void SetValue(float val);
+
     AnalogControl analog_input;
     dsy_gpio gpio;
     BananaConfig config;
+    uint8_t dac_chn;
 };
 
 } // namespace daisy
