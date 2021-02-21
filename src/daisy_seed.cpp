@@ -208,6 +208,7 @@ void DaisySeed::ConfigureSdram()
     pin_group                      = sdram_handle.pin_config;
     pin_group[DSY_SDRAM_PIN_SDNWE] = dsy_pin(DSY_GPIOH, 5);
 }
+
 void DaisySeed::ConfigureQspi()
 {
     dsy_gpio_pin *pin_group;
@@ -223,6 +224,7 @@ void DaisySeed::ConfigureQspi()
     pin_group[DSY_QSPI_PIN_CLK] = dsy_pin(DSY_GPIOF, 10);
     pin_group[DSY_QSPI_PIN_NCS] = dsy_pin(DSY_GPIOG, 6);
 }
+
 void DaisySeed::ConfigureAudio()
 {
     // SAI2 - config
@@ -266,6 +268,7 @@ void DaisySeed::ConfigureAudio()
     audio_config.postgain   = 1.f;
     audio_handle.Init(audio_config, sai_1_handle);
 }
+
 void DaisySeed::ConfigureDac()
 {
     dsy_gpio_pin *pin_group;
@@ -275,6 +278,7 @@ void DaisySeed::ConfigureDac()
     pin_group[DSY_DAC_CHN1] = dsy_pin(DSY_GPIOA, 4);
     pin_group[DSY_DAC_CHN2] = dsy_pin(DSY_GPIOA, 5);
 }
+
 /*void DaisySeed::ConfigureI2c()
 {
     dsy_gpio_pin *pin_group;

@@ -29,27 +29,30 @@ using namespace daisy;
 #define PIN_KNOB_6 21
 #define PIN_KNOB_7 28
 
+#define PIN_DAC_0 24
+#define PIN_DAC_1 25
+
 #define PIN_OLED_RES 6
 #define PIN_OLED_DC 9
 
 #define PIN_LED_SCL 11
 #define PIN_LED_SDA 12
 
-#define PIN_SERIAL_IN 14
-#define PIN_SERIAL_OUT 14
+#define PIN_BANANA_0 23
+#define PIN_BANANA_1 25
+#define PIN_BANANA_2 22
+#define PIN_BANANA_3 24
+#define PIN_BANANA_4 13
+#define PIN_BANANA_5 14
 
-#define PIN_BANANA_0 25
-#define PIN_BANANA_1 23
-#define PIN_BANANA_2 24
-#define PIN_BANANA_3 22
-
-void SuperPatch::Init()
+void SuperPatch::Init(BananaConfig *banana_config)
 {
     // Set Some numbers up for accessors.
     // Initialize the hardware.
     seed.Configure();
     seed.Init();
     dsy_tim_start();
+    InitBananas(banana_config);
     InitSwitches();
     InitEncoders();
     InitAnalogControls();
@@ -123,6 +126,11 @@ void SuperPatch::StopAdc()
     seed.adc.Stop();
 }
 
+void SuperPatch::StartDac()
+{
+    dsy_dac_start(DSY_DAC_CHN_BOTH);
+}
+
 void SuperPatch::ProcessAnalogControls()
 {
     for(size_t i = 0; i < NUM_KNOBS; i++)
@@ -130,6 +138,32 @@ void SuperPatch::ProcessAnalogControls()
         knob[i].Process();
         // knob[i].Debounce();
     }
+}
+
+void SuperPatch::SetDacOutRaw1(uint16_t val)
+{
+    // Assumes that we're using 12bit DAC, so range is 0-4095
+    val = (val < 0.) ? 0 : (val > 4095) ? 4095 : val;
+    dsy_dac_write(DSY_DAC_CHN1, val);
+}
+
+void SuperPatch::SetDacOut1(float val)
+{  
+    // Assumes that we're using 12bit DAC, so range is 0-4095
+    SetDacOutRaw1((int) (4095.f * val));
+}
+
+void SuperPatch::SetDacOutRaw2(uint16_t val)
+{
+    // Assumes that we're using 12bit DAC, so range is 0-4095
+    val = (val < 0.) ? 0 : (val > 4095) ? 4095 : val;
+    dsy_dac_write(DSY_DAC_CHN2, val);
+}
+
+void SuperPatch::SetDacOut2(float val)
+{  
+    // Assumes that we're using 12bit DAC, so range is 0-4095
+    SetDacOutRaw2((int) (4095.f * val));
 }
 
 float SuperPatch::GetKnobValue(uint8_t k)
@@ -185,6 +219,138 @@ void SuperPatch::SetOnboardLed(bool val)
     seed.SetLed(val);
 }
 
+void SuperPatch::InitBananas(BananaConfig *banana_config)
+{
+    // Note: this should be done before initializing
+    // other peripherals. In particular all the ADCs
+    // need configuring together, so should be done after
+    // InitBananas.
+
+    uint8_t banana_pin_numbers[NUM_BANANAS] = {
+        PIN_BANANA_0,
+        PIN_BANANA_1,
+        PIN_BANANA_2,
+        PIN_BANANA_3,
+        PIN_BANANA_4,
+        PIN_BANANA_5
+    };
+
+    banana_adc_list.clear();
+
+    for (int i = 0; i < NUM_BANANAS; i++)
+    {
+        if (banana_config == NULL)
+        {
+            banana[i].config = {OFF, 0};
+        }
+        else
+        {
+            banana[i].config = banana_config[i];
+
+            switch (banana[i].config.mode)
+            {
+            case DIGITAL_INPUT:
+                // Any banana can be used as a digital input
+                banana[i].gpio.pin = seed.GetPin(banana_pin_numbers[i]);
+                banana[i].gpio.mode = DSY_GPIO_MODE_INPUT;
+                banana[i].gpio.pull = DSY_GPIO_NOPULL;
+                dsy_gpio_init(&banana[i].gpio);
+                break;
+
+            case DIGITAL_OUTPUT:
+                // Any banana can be used as a digital output
+                banana[i].gpio.pin = seed.GetPin(banana_pin_numbers[i]);
+                banana[i].gpio.mode = DSY_GPIO_MODE_OUTPUT_PP;
+                banana[i].gpio.pull = DSY_GPIO_NOPULL;
+                dsy_gpio_init(&banana[i].gpio);
+                break;
+
+            case ANALOG_INPUT:
+                // Only bananas 0-3 can be used as analog inputs
+                if (i <= 3)
+                {
+                    // Need to setup data to be used in InitAnalogControls() to configure ADCs
+                    banana_adc_list.push_back(i);
+                    banana[i].gpio.pin = seed.GetPin(banana_pin_numbers[i]);
+                }
+                else
+                {
+                    // Should issue some sort of error!
+                    banana[i].config.mode = OFF;
+                }
+                break;
+
+            case ANALOG_OUTPUT:
+                // Only bananas 0 and 2 can be analog outputs
+                if (i == 0 || i == 2)
+                {
+                    // In InitDac() we check which bananas are being used as analog outputs
+                    // Don't need to do anything here as the mode has already been set
+                }
+                else
+                {
+                    // Should issue some sort of error!
+                    banana[i].config.mode = OFF;
+                }
+                break;
+
+            case SERIAL_INPUT:
+                // Only banana 5 can be used for serial input
+                if (i == 5)
+                {
+
+                }
+                else
+                {
+                    // Should issue some sort of error!
+                    banana[i].config.mode = OFF;
+                } 
+                break;
+
+            case SERIAL_OUTPUT:
+                // Only banana 4 can be used for serial output
+                if (i == 4)
+                {
+
+                }
+                else
+                {
+                    // Should issue some sort of error!
+                    banana[i].config.mode = OFF;
+                }                 break;
+
+            case MIDI_INPUT:
+                // Only banana 5 can be used for MIDI input
+                if (i == 5)
+                {
+
+                }
+                else
+                {
+                    // Should issue some sort of error!
+                    banana[i].config.mode = OFF;
+                }                 break;
+
+            case MIDI_OUTPUT:
+                // Only banana 4 can be used for MIDI output
+                if (i == 4)
+                {
+
+                }
+                else
+                {
+                    // Should issue some sort of error!
+                    banana[i].config.mode = OFF;
+                } 
+                break;
+
+            case OFF:
+                break;
+            }
+        }
+    }
+}
+
 void SuperPatch::InitSwitches()
 {
     uint8_t button_pin_numbers[NUM_BUTTONS] = {
@@ -195,7 +361,7 @@ void SuperPatch::InitSwitches()
     for(size_t i = 0; i < NUM_BUTTONS; i++)
     {
         button[i].Init(seed.GetPin(button_pin_numbers[i]), AudioCallbackRate());
-    }    
+    } 
 }
 
 void SuperPatch::InitEncoders()
@@ -215,8 +381,9 @@ void SuperPatch::InitEncoders()
 
 void SuperPatch::InitAnalogControls()
 {
-    // Set order of ADCs based on CHANNEL NUMBER
-    AdcChannelConfig cfg[NUM_KNOBS];
+    // Set order of ADCs based on CHANNEL NUMBER + ADCs needed for Banana plugs
+    uint8_t num_banana_adcs = banana_adc_list.size();
+    AdcChannelConfig cfg[NUM_KNOBS + num_banana_adcs];
 
     // Init with Single Pins
     cfg[0].InitSingle(seed.GetPin(PIN_KNOB_0));
@@ -228,12 +395,45 @@ void SuperPatch::InitAnalogControls()
     cfg[6].InitSingle(seed.GetPin(PIN_KNOB_6));
     cfg[7].InitSingle(seed.GetPin(PIN_KNOB_7));
 
-    seed.adc.Init(cfg, NUM_KNOBS);
+    // Init cfg for ADCs needed by banana plugs
+    for (uint8_t i = 0; i < num_banana_adcs; i++)
+    {
+        uint8_t banana_index = banana_adc_list[i];
+        cfg[NUM_KNOBS + i].InitSingle(banana[banana_index].gpio.pin);
+    }
+
+    seed.adc.Init(cfg, NUM_KNOBS + num_banana_adcs);
 
     // Make an array of pointers to the knob.
     for(int i = 0; i < NUM_KNOBS; i++)
     {
         knob[i].Init(seed.adc.GetPtr(i), AudioCallbackRate());
+    }
+
+    // Get pointers to any AnalogControls needed by bananas
+    for (uint8_t i = 0; i < num_banana_adcs; i++)
+    {
+        uint8_t banana_index = banana_adc_list[i];
+        banana[banana_index].analog_input.Init(seed.adc.GetPtr(NUM_KNOBS + i), AudioCallbackRate());
+    }
+}
+
+void SuperPatch::InitDac()
+{
+    bool dac1_used = (banana[0].config.mode == ANALOG_OUTPUT);
+    bool dac2_used = (banana[1].config.mode == ANALOG_OUTPUT);
+
+    if (dac1_used & dac2_used)
+    {
+        dsy_dac_init(&seed.dac_handle, DSY_DAC_CHN_BOTH);
+    }
+    else if (dac1_used)
+    {
+        dsy_dac_init(&seed.dac_handle, DSY_DAC_CHN1);
+    }
+    else if (dac2_used)
+    {
+        dsy_dac_init(&seed.dac_handle, DSY_DAC_CHN2);
     }
 }
 

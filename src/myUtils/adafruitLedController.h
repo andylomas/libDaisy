@@ -10,7 +10,7 @@
 #include "per/gpio.h"
 #include "daisy_core.h"
 
-#define DATA_BUFFER_SIZE 28
+#define ADALED_DATA_BUFFER_SIZE 28
  
 class AdafruitLedController
 {
@@ -39,7 +39,7 @@ private:
     float gamma_;
     bool use_spi_;
     bool use_cs_;
-    uint8_t data_buffer_[DATA_BUFFER_SIZE];
+    uint8_t data_buffer_[ADALED_DATA_BUFFER_SIZE];
 };
 
 #endif

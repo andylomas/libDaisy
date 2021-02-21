@@ -6,7 +6,10 @@
 #include "daisy_seed.h"
 #include "myUtils/myEncoder.h"
 #include "myUtils/mySwitch.h"
+#include "myUtils/myUart.h"
 #include "myUtils/AdafruitLedController.h"
+#include "myUtils/myBanana.h"
+#include "vector"
 
 namespace daisy
 {
@@ -17,20 +20,28 @@ namespace daisy
 
 #define NUM_SWITCHES 0
 #define NUM_BUTTONS 2
-#define NUM_KNOBS 8
+#define NUM_KNOBS 10
 #define NUM_ENCODERS 2
 #define NUM_LEDS 4
+#define NUM_BANANAS 6
 
 class SuperPatch
 {
 public:
+    enum
+    {
+        UART_RX,    /**< tactile switch */
+        UART_TX,    /**< tactile switch */
+        UART_BOTH, /**< & */
+    };
+
     /** Constructor */
     SuperPatch() {}
     /** Destructor */
     ~SuperPatch() {}
 
     /** Initialize daisy petal */
-    void Init();
+    void Init(BananaConfig *banana_config = NULL);
 
     /**
        Wait before moving on.
@@ -89,6 +100,9 @@ public:
     /** Stops Transfering data from the ADC */
     void StopAdc();
 
+    /** Turns on the built-in 12-bit DAC on the Daisy Seed */
+    void StartDac();
+
     /** Returns number of audio channels */
     int NumChannels() { return 2; }
 
@@ -101,6 +115,14 @@ public:
         ProcessAnalogControls();
         ProcessDigitalControls();
     }
+
+    /** Sets the output of DAC 1 to a value between 0-4095 that corresponds to 0-5V */
+    void SetDacOutRaw1(uint16_t val);
+    void SetDacOut1(float val);
+
+    /** Sets the output of DAC 2 to a value between 0-4095 that corresponds to 0-5V */
+    void SetDacOutRaw2(uint16_t val);
+    void SetDacOut2(float val);
 
     /** Get value per knob.
     \param k Which knob to get
@@ -143,16 +165,21 @@ public:
     MyEncoder encoder[NUM_ENCODERS];
     OledDisplay display;
     AdafruitLedController led_controller;
+    MyUartHandler uart;
+    MyBanana banana[NUM_BANANAS];
 
 private:
+    void InitBananas(BananaConfig *banana_config);
     void InitSwitches();
     void InitEncoders();
     void InitLeds();
     void InitAnalogControls();
+    void InitDac();
     void InitOledDisplay();
     void InitLedController();
 
     inline uint16_t* adc_ptr(const uint8_t chn) { return seed.adc.GetPtr(chn); }
+    std::vector<uint8_t> banana_adc_list;
 };
 
 } // namespace daisy

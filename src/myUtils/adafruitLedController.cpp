@@ -98,12 +98,12 @@ void AdafruitLedController::SetDataBufferBits(uint8_t v, uint8_t num_bits, uint8
         if ( v & (1 << i))
         {
             // Set bit_pos at byte_pos
-            data_buffer_[DATA_BUFFER_SIZE - byte_pos - 1] |= (1 << bit_pos);
+            data_buffer_[ADALED_DATA_BUFFER_SIZE - byte_pos - 1] |= (1 << bit_pos);
         }
         else
         {
             // Clear bit_pos at byte_pos
-            data_buffer_[DATA_BUFFER_SIZE - byte_pos - 1] &= ~(1 << bit_pos);
+            data_buffer_[ADALED_DATA_BUFFER_SIZE - byte_pos - 1] &= ~(1 << bit_pos);
         }
         
         bit_pos++;
@@ -134,12 +134,12 @@ void AdafruitLedController::SetGamma(const float gamma)
 void AdafruitLedController::SetRaw(uint8_t n, const uint16_t r, const uint16_t g, const uint16_t b)
 {
     uint8_t buffer_pos = 6 * n;
-    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 1] = r % 256;
-    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 2] = r / 256;
-    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 3] = g % 256;
-    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 4] = g / 256;
-    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 5] = b % 256;
-    data_buffer_[DATA_BUFFER_SIZE - buffer_pos - 6] = b / 256;   
+    data_buffer_[ADALED_DATA_BUFFER_SIZE - buffer_pos - 1] = r % 256;
+    data_buffer_[ADALED_DATA_BUFFER_SIZE - buffer_pos - 2] = r / 256;
+    data_buffer_[ADALED_DATA_BUFFER_SIZE - buffer_pos - 3] = g % 256;
+    data_buffer_[ADALED_DATA_BUFFER_SIZE - buffer_pos - 4] = g / 256;
+    data_buffer_[ADALED_DATA_BUFFER_SIZE - buffer_pos - 5] = b % 256;
+    data_buffer_[ADALED_DATA_BUFFER_SIZE - buffer_pos - 6] = b / 256;   
 }
 
     
@@ -194,13 +194,13 @@ void AdafruitLedController::Update()
 
     if (use_spi_)
     {
-        h_spi.BlockingTransmit(data_buffer_, DATA_BUFFER_SIZE);
+        h_spi.BlockingTransmit(data_buffer_, ADALED_DATA_BUFFER_SIZE);
     }
     else
     {
         // Could have test here whether there has been any change to the data...
         // We send data to the TLC59711 in MSB order
-        shiftOutBuffer(&pin_data_, &pin_clock_, MSBFIRST, data_buffer_, DATA_BUFFER_SIZE);
+        shiftOutBuffer(&pin_data_, &pin_clock_, MSBFIRST, data_buffer_, ADALED_DATA_BUFFER_SIZE);
 
         // Set the data value back to 0 clean up
         dsy_gpio_write(&pin_data_, 0);
