@@ -24,6 +24,7 @@ enum BananaMode {
 
 struct BananaConfig {
     BananaMode mode = OFF;
+    dsy_gpio_pull pull = DSY_GPIO_NOPULL;
     uint32_t baud_rate = 115200;
 };
 
@@ -32,6 +33,8 @@ class MyBanana
 public:
     float Value();
     void SetValue(float val);
+    bool Read();
+    void Write(bool state);
 
     AnalogControl analog_input;
     dsy_gpio gpio;

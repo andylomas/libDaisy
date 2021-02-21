@@ -22,3 +22,19 @@ void MyBanana::SetValue(float val) {
             dsy_dac_write(DSY_DAC_CHN2, int_val);
     }
 }
+
+bool MyBanana::Read()
+{
+    if (config.mode == DIGITAL_INPUT )
+    {
+        return dsy_gpio_read(&gpio);
+    }
+}
+
+void MyBanana::Write(bool state)
+{
+    if (config.mode == ANALOG_INPUT)
+    {
+        return dsy_gpio_write(&gpio, state);
+    }
+}

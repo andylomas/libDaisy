@@ -227,10 +227,9 @@ void SuperPatch::SetOnboardLed(bool val)
 
 void SuperPatch::InitBananas(BananaConfig *banana_config)
 {
-    // Note: this should be done before initializing
-    // other peripherals. In particular all the ADCs
-    // need configuring together, so should be done after
-    // InitBananas.
+    // Note: this should be done before initializing other peripherals.
+    // In particular all the ADCs need configuring together, so should be
+    // done after InitBananas().
 
     uint8_t banana_pin_numbers[NUM_BANANAS] = {
         PIN_BANANA_0,
@@ -247,7 +246,8 @@ void SuperPatch::InitBananas(BananaConfig *banana_config)
     {
         if (banana_config == NULL)
         {
-            banana[i].config = {OFF, 0};
+            // If no configuration given, swtich all banana input/outputs off
+            banana[i].config.mode = OFF;
         }
         else
         {
@@ -259,7 +259,7 @@ void SuperPatch::InitBananas(BananaConfig *banana_config)
                 // Any banana can be used as a digital input
                 banana[i].gpio.pin = seed.GetPin(banana_pin_numbers[i]);
                 banana[i].gpio.mode = DSY_GPIO_MODE_INPUT;
-                banana[i].gpio.pull = DSY_GPIO_NOPULL;
+                banana[i].gpio.pull = banana[i].config.pull;
                 dsy_gpio_init(&banana[i].gpio);
                 break;
 
