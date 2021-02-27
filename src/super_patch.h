@@ -116,14 +116,6 @@ public:
         ProcessDigitalControls();
     }
 
-    // /** Sets the output of DAC 1 to a value between 0-4095 that corresponds to 0-5V */
-    // void SetDacOutRaw1(uint16_t val);
-    // void SetDacOut1(float val);
-
-    // /** Sets the output of DAC 2 to a value between 0-4095 that corresponds to 0-5V */
-    // void SetDacOutRaw2(uint16_t val);
-    // void SetDacOut2(float val);
-
     /** Get value per knob.
     \param k Which knob to get
     \return Floating point knob position.

@@ -4,15 +4,15 @@
 
 using namespace daisy;
 
-float MyBanana::Value()
+float MyBanana::AnalogInput()
 {
     if (config.mode == ANALOG_INPUT)
     {
-        return analog_input.Value();
+        return analog_control.Value();
     }
 }
 
-void MyBanana::SetValue(float val) {
+void MyBanana::AnalogOutput(float val) {
     if (config.mode == ANALOG_OUTPUT)
     {
         int int_val = (val < 0.f) ? 0 : (val > 1.f) ? 4095 : (int) (4095.f * val);
@@ -23,7 +23,7 @@ void MyBanana::SetValue(float val) {
     }
 }
 
-bool MyBanana::Read()
+bool MyBanana::DigitalInput()
 {
     if (config.mode == DIGITAL_INPUT )
     {
@@ -31,7 +31,7 @@ bool MyBanana::Read()
     }
 }
 
-void MyBanana::Write(bool state)
+void MyBanana::DigitalOutput(bool state)
 {
     if (config.mode == ANALOG_INPUT)
     {

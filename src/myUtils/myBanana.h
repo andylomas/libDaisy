@@ -31,12 +31,12 @@ struct BananaConfig {
 class MyBanana
 {
 public:
-    float Value();
-    void SetValue(float val);
-    bool Read();
-    void Write(bool state);
+    float AnalogInput();
+    void AnalogOutput(float val);
+    bool DigitalInput();
+    void DigitalOutput(bool state);
 
-    AnalogControl analog_input;
+    AnalogControl analog_control;
     dsy_gpio gpio;
     BananaConfig config;
     uint8_t dac_chn;

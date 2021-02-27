@@ -142,35 +142,9 @@ void SuperPatch::ProcessAnalogControls()
     for (uint8_t i = 0; i < num_banana_adcs; i++)
     {
         uint8_t banana_index = banana_adc_list[i];
-        banana[banana_index].analog_input.Process();
+        banana[banana_index].analog_control.Process();
     }
 }
-
-// void SuperPatch::SetDacOutRaw1(uint16_t val)
-// {
-//     // Assumes that we're using 12bit DAC, so range is 0-4095
-//     val = (val < 0.) ? 0 : (val > 4095) ? 4095 : val;
-//     dsy_dac_write(DSY_DAC_CHN1, val);
-// }
-
-// void SuperPatch::SetDacOut1(float val)
-// {  
-//     // Assumes that we're using 12bit DAC, so range is 0-4095
-//     SetDacOutRaw1((int) (4095.f * val));
-// }
-
-// void SuperPatch::SetDacOutRaw2(uint16_t val)
-// {
-//     // Assumes that we're using 12bit DAC, so range is 0-4095
-//     val = (val < 0.) ? 0 : (val > 4095) ? 4095 : val;
-//     dsy_dac_write(DSY_DAC_CHN2, val);
-// }
-
-// void SuperPatch::SetDacOut2(float val)
-// {  
-//     // Assumes that we're using 12bit DAC, so range is 0-4095
-//     SetDacOutRaw2((int) (4095.f * val));
-//}
 
 float SuperPatch::GetKnobValue(uint8_t k)
 {
@@ -421,7 +395,7 @@ void SuperPatch::InitAnalogControls()
     for (uint8_t i = 0; i < num_banana_adcs; i++)
     {
         uint8_t banana_index = banana_adc_list[i];
-        banana[banana_index].analog_input.Init(seed.adc.GetPtr(NUM_KNOBS + i), AudioCallbackRate());
+        banana[banana_index].analog_control.Init(seed.adc.GetPtr(NUM_KNOBS + i), AudioCallbackRate());
     }
 }
 

@@ -63,6 +63,7 @@ void MyUartHandler::Init(UartInstance instance, uint32_t baud_rate)
     uhandle.huart1.Init.Mode                   = UART_MODE_TX_RX;
     uhandle.huart1.Init.HwFlowCtl              = UART_HWCONTROL_NONE;
     uhandle.huart1.Init.OverSampling           = UART_OVERSAMPLING_16;
+    //uhandle.huart1.Init.OverSampling           = UART_OVERSAMPLING_8;
     uhandle.huart1.Init.OneBitSampling         = UART_ONE_BIT_SAMPLE_DISABLE;
     uhandle.huart1.Init.ClockPrescaler         = UART_PRESCALER_DIV1;
     uhandle.huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
