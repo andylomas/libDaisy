@@ -11,21 +11,20 @@
 namespace daisy
 {
 enum BananaMode {
-    DIGITAL_INPUT,
-    DIGITAL_OUTPUT,
-    ANALOG_INPUT,
-    ANALOG_OUTPUT,
-    SERIAL_INPUT,
-    SERIAL_OUTPUT,
-    MIDI_INPUT,
-    MIDI_OUTPUT,
-    OFF
+    DIGITAL_INPUT = 1,
+    DIGITAL_OUTPUT = 2,
+    ANALOG_INPUT = 4,
+    ANALOG_OUTPUT = 8,
+    SERIAL_INPUT = 16,
+    SERIAL_OUTPUT = 32,
+    OFF = 0
 };
 
 struct BananaConfig {
     BananaMode mode = OFF;
     dsy_gpio_pull pull = DSY_GPIO_NOPULL;
-    uint32_t baud_rate = 115200;
+    //uint32_t baud_rate = 115200;
+    uint32_t baud_rate = 6250000; // Highest baud rate available
 };
 
 class MyBanana

@@ -45,8 +45,27 @@ using namespace daisy;
 #define PIN_BANANA_4 13
 #define PIN_BANANA_5 14
 
+uint8_t banana_pin_numbers[NUM_BANANAS] = {
+    PIN_BANANA_0,
+    PIN_BANANA_1,
+    PIN_BANANA_2,
+    PIN_BANANA_3,
+    PIN_BANANA_4,
+    PIN_BANANA_5
+};
+
+uint8_t  banana_config_options[NUM_BANANAS] = {
+    DIGITAL_INPUT | DIGITAL_OUTPUT | ANALOG_INPUT | ANALOG_OUTPUT,  // BANANA_0
+    DIGITAL_INPUT | DIGITAL_OUTPUT | ANALOG_INPUT,                  // BANANA_1
+    DIGITAL_INPUT | DIGITAL_OUTPUT | ANALOG_INPUT | ANALOG_OUTPUT,  // BANANA_2
+    DIGITAL_INPUT | DIGITAL_OUTPUT | ANALOG_INPUT,                  // BANANA_3
+    DIGITAL_INPUT | DIGITAL_OUTPUT | SERIAL_OUTPUT,                 // BANANA_4
+    DIGITAL_INPUT | DIGITAL_OUTPUT | SERIAL_INPUT                   // BANANA_5
+};
+
 void SuperPatch::Init(BananaConfig *banana_config)
 {
+    banana_config_options[0] = 10;
     // Set Some numbers up for accessors.
     // Initialize the hardware.
     seed.Configure();
@@ -139,9 +158,9 @@ void SuperPatch::ProcessAnalogControls()
         knob[i].Process();
     }
 
-    for (uint8_t i = 0; i < num_banana_adcs; i++)
+    for (uint8_t i = 0; i < num_banana_adcs_; i++)
     {
-        uint8_t banana_index = banana_adc_list[i];
+        uint8_t banana_index = banana_adc_list_[i];
         banana[banana_index].analog_control.Process();
     }
 }
@@ -205,16 +224,9 @@ void SuperPatch::InitBananas(BananaConfig *banana_config)
     // In particular all the ADCs need configuring together, so should be
     // done after InitBananas().
 
-    uint8_t banana_pin_numbers[NUM_BANANAS] = {
-        PIN_BANANA_0,
-        PIN_BANANA_1,
-        PIN_BANANA_2,
-        PIN_BANANA_3,
-        PIN_BANANA_4,
-        PIN_BANANA_5
-    };
 
-    banana_adc_list.clear();
+
+    banana_adc_list_.clear();
 
     for (int i = 0; i < NUM_BANANAS; i++)
     {
@@ -230,27 +242,40 @@ void SuperPatch::InitBananas(BananaConfig *banana_config)
             switch (banana[i].config.mode)
             {
             case DIGITAL_INPUT:
-                // Any banana can be used as a digital input
-                banana[i].gpio.pin = seed.GetPin(banana_pin_numbers[i]);
-                banana[i].gpio.mode = DSY_GPIO_MODE_INPUT;
-                banana[i].gpio.pull = banana[i].config.pull;
-                dsy_gpio_init(&banana[i].gpio);
+                if (banana_config_options[i] & DIGITAL_INPUT)
+                {
+                    banana[i].gpio.pin = seed.GetPin(banana_pin_numbers[i]);
+                    banana[i].gpio.mode = DSY_GPIO_MODE_INPUT;
+                    banana[i].gpio.pull = banana[i].config.pull;
+                    dsy_gpio_init(&banana[i].gpio);
+                }
+                else
+                {
+                    // Should issue some sort of error!
+                    banana[i].config.mode = OFF;
+                }                    
                 break;
 
             case DIGITAL_OUTPUT:
-                // Any banana can be used as a digital output
-                banana[i].gpio.pin = seed.GetPin(banana_pin_numbers[i]);
-                banana[i].gpio.mode = DSY_GPIO_MODE_OUTPUT_PP;
-                banana[i].gpio.pull = DSY_GPIO_NOPULL;
-                dsy_gpio_init(&banana[i].gpio);
-                break;
+                if (banana_config_options[i] & DIGITAL_OUTPUT)
+                {
+                    banana[i].gpio.pin = seed.GetPin(banana_pin_numbers[i]);
+                    banana[i].gpio.mode = DSY_GPIO_MODE_OUTPUT_PP;
+                    banana[i].gpio.pull = DSY_GPIO_NOPULL;
+                    dsy_gpio_init(&banana[i].gpio);
+                }
+                else
+                {
+                    // Should issue some sort of error!
+                    banana[i].config.mode = OFF;
+                }                    
+                break;                break;
 
             case ANALOG_INPUT:
-                // Only bananas 0-3 can be used as analog inputs
-                if (i <= 3)
+                if (banana_config_options[i] & ANALOG_INPUT)
                 {
                     // Need to setup data to be used in InitAnalogControls() to configure ADCs
-                    banana_adc_list.push_back(i);
+                    banana_adc_list_.push_back(i);
                     banana[i].gpio.pin = seed.GetPin(banana_pin_numbers[i]);
                 }
                 else
@@ -261,8 +286,7 @@ void SuperPatch::InitBananas(BananaConfig *banana_config)
                 break;
 
             case ANALOG_OUTPUT:
-                // Only bananas 0 and 2 can be analog outputs
-                if (i == 0 || i == 2)
+                if (banana_config_options[i] & ANALOG_OUTPUT)
                 {
                     // In InitDac() we check which bananas are being used as analog outputs
                     // Don't need to do anything here as the mode has already been set
@@ -276,10 +300,12 @@ void SuperPatch::InitBananas(BananaConfig *banana_config)
                 break;
 
             case SERIAL_INPUT:
-                // Only banana 5 can be used for serial input
-                if (i == 5)
+                if (banana_config_options[i] & SERIAL_INPUT)
                 {
-
+                    // We're assuming that there's only SERIAL_USART1 available for serial input
+                    dsy_system_delay(250);
+                    uart.Init(SERIAL_USART1, banana[i].config.baud_rate); // Highest baud rate for tx on USART1 using 16x oversampling
+                    uart.StartRx();                    
                 }
                 else
                 {
@@ -289,40 +315,17 @@ void SuperPatch::InitBananas(BananaConfig *banana_config)
                 break;
 
             case SERIAL_OUTPUT:
-                // Only banana 4 can be used for serial output
-                if (i == 4)
+                if (banana_config_options[i] & SERIAL_OUTPUT)
                 {
-
+                    // We're assuming that there's only one UART available for serial input
+                    dsy_system_delay(250);
+                    uart.Init(SERIAL_USART1, banana[i].config.baud_rate); // Highest baud rate for tx on USART1 using 16x oversampling
                 }
                 else
                 {
                     // Should issue some sort of error!
                     banana[i].config.mode = OFF;
-                }                 break;
-
-            case MIDI_INPUT:
-                // Only banana 5 can be used for MIDI input
-                if (i == 5)
-                {
-
-                }
-                else
-                {
-                    // Should issue some sort of error!
-                    banana[i].config.mode = OFF;
-                }                 break;
-
-            case MIDI_OUTPUT:
-                // Only banana 4 can be used for MIDI output
-                if (i == 4)
-                {
-
-                }
-                else
-                {
-                    // Should issue some sort of error!
-                    banana[i].config.mode = OFF;
-                } 
+                }                 
                 break;
 
             case OFF:
@@ -363,8 +366,8 @@ void SuperPatch::InitEncoders()
 void SuperPatch::InitAnalogControls()
 {
     // Set order of ADCs based on CHANNEL NUMBER + ADCs needed for Banana plugs
-    num_banana_adcs = banana_adc_list.size();
-    AdcChannelConfig cfg[NUM_KNOBS + num_banana_adcs];
+    num_banana_adcs_ = banana_adc_list_.size();
+    AdcChannelConfig cfg[NUM_KNOBS + num_banana_adcs_];
 
     // Init with Single Pins
     cfg[0].InitSingle(seed.GetPin(PIN_KNOB_0));
@@ -377,13 +380,13 @@ void SuperPatch::InitAnalogControls()
     cfg[7].InitSingle(seed.GetPin(PIN_KNOB_7));
 
     // Init cfg for ADCs needed by banana plugs
-    for (uint8_t i = 0; i < num_banana_adcs; i++)
+    for (uint8_t i = 0; i < num_banana_adcs_; i++)
     {
-        uint8_t banana_index = banana_adc_list[i];
+        uint8_t banana_index = banana_adc_list_[i];
         cfg[NUM_KNOBS + i].InitSingle(banana[banana_index].gpio.pin);
     }
 
-    seed.adc.Init(cfg, NUM_KNOBS + num_banana_adcs);
+    seed.adc.Init(cfg, NUM_KNOBS + num_banana_adcs_);
 
     // Make an array of pointers to the knob.
     for(int i = 0; i < NUM_KNOBS; i++)
@@ -392,9 +395,9 @@ void SuperPatch::InitAnalogControls()
     }
 
     // Get pointers to any AnalogControls needed by bananas
-    for (uint8_t i = 0; i < num_banana_adcs; i++)
+    for (uint8_t i = 0; i < num_banana_adcs_; i++)
     {
-        uint8_t banana_index = banana_adc_list[i];
+        uint8_t banana_index = banana_adc_list_[i];
         banana[banana_index].analog_control.Init(seed.adc.GetPtr(NUM_KNOBS + i), AudioCallbackRate());
     }
 }
@@ -436,4 +439,38 @@ void SuperPatch::InitLedController()
     led_controller.Init(led_data_pin, led_clock_pin);
     led_controller.SetGlobalBrightness(1.0, 0.35, 0.3);
     led_controller.Clear();
+}
+
+int SuperPatch::SerialSend(uint8_t *buff, size_t size)
+{
+    uart.PollTx(buff, size);
+}
+
+int SuperPatch::SerialReceive(size_t size)
+{
+    // Reads up to SERIAL_BUFFER_SIZE bytes from the UART into serial_buffer
+    int count = 0;
+    while (uart.Readable() && count < SERIAL_BUFFER_SIZE)
+    {
+        serial_buffer[count] = uart.PopRx();
+        count++;
+    }
+
+    if (null_termination && count < SERIAL_BUFFER_SIZE)
+    {
+        serial_buffer[count] = 0;
+    }
+
+    if(!uart.RxActive())
+    {
+        uart.FlushRx();
+        uart.StartRx();
+    }
+
+    return count;
+}
+
+int SuperPatch::SerialFlush()
+{
+    return uart.FlushRx();
 }

@@ -147,6 +147,17 @@ class OledDisplay
     char WriteString(const char* str, FontDef font, bool on);
 
     /** 
+    Similar to WriteChar, except it will handle an entire buffer.
+    Wrapping does not happen automatically, so the width
+    of the string must be kept within the dimensions of the screen.
+    \param str string to be written
+    \param font font to use
+    \param on  on or off
+    \return &
+    */
+    char WriteBuffer(const char* buf, size_t bytes, FontDef font, bool on);
+
+    /** 
     Moves the 'Cursor' position used for WriteChar, and WriteStr to the specified coordinate.
     \param x x pos
     \param y y pos

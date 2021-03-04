@@ -24,6 +24,7 @@ namespace daisy
 #define NUM_ENCODERS 2
 #define NUM_LEDS 4
 #define NUM_BANANAS 6
+#define SERIAL_BUFFER_SIZE 256
 
 class SuperPatch
 {
@@ -150,6 +151,13 @@ public:
     void SetEncoderLedValue(uint8_t idx, int val) { SetLedValue(idx, val); }
     void SetEncoderLedFloat(uint8_t idx, float r, float g, float b) { SetLedFloat(idx, r, g, b); }
 
+    /**
+       Serial functions
+     */
+    int SerialSend(uint8_t *buff, size_t size);
+    int SerialReceive();
+    int SerialFlush();
+
     DaisySeed seed;    /**< & */
 
     AnalogControl knob[NUM_KNOBS];
@@ -159,6 +167,7 @@ public:
     AdafruitLedController led_controller;
     MyUartHandler uart;
     MyBanana banana[NUM_BANANAS];
+    uint8_t serial_buffer[SERIAL_BUFFER_SIZE + 1];
 
 private:
     void InitBananas(BananaConfig *banana_config);
@@ -171,8 +180,8 @@ private:
     void InitLedController();
 
     inline uint16_t* adc_ptr(const uint8_t chn) { return seed.adc.GetPtr(chn); }
-    std::vector<uint8_t> banana_adc_list;
-    uint8_t num_banana_adcs;
+    std::vector<uint8_t> banana_adc_list_;
+    uint8_t num_banana_adcs_;
 };
 
 } // namespace daisy

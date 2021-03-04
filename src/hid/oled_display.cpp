@@ -478,6 +478,7 @@ char OledDisplay::WriteChar(char ch, FontDef font, bool on)
     // Return written char for validation
     return ch;
 }
+
 char OledDisplay::WriteString(const char* str, FontDef font, bool on)
 {
     // Write until null-byte
@@ -496,6 +497,25 @@ char OledDisplay::WriteString(const char* str, FontDef font, bool on)
     // Everything ok
     return *str;
 }
+
+char OledDisplay::WriteBuffer(const char* buf, size_t num_bytes, FontDef font, bool on)
+{
+    for(size_t i; i < num_bytes; i++)
+    {
+        if(WriteChar(*buf, font, on) != *buf)
+        {
+            // Char could not be written
+            return *buf;
+        }
+
+        // Next char
+        buf++;
+    }
+
+    // Everything ok
+    return *buf;
+}
+
 void OledDisplay::SetCursor(uint8_t x, uint8_t y)
 {
     SSD1309.CurrentX = x;
