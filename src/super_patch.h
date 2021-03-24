@@ -154,8 +154,8 @@ public:
     /**
        Serial functions
      */
-    int SerialSend(uint8_t *buff, size_t size);
-    int SerialReceive();
+    int SerialSend(const char *buff, size_t size);
+    int SerialReceive(size_t size = SERIAL_BUFFER_SIZE);
     int SerialFlush();
 
     DaisySeed seed;    /**< & */
@@ -167,7 +167,7 @@ public:
     AdafruitLedController led_controller;
     MyUartHandler uart;
     MyBanana banana[NUM_BANANAS];
-    uint8_t serial_buffer[SERIAL_BUFFER_SIZE + 1];
+    char serial_buffer[SERIAL_BUFFER_SIZE + 1];
 
 private:
     void InitBananas(BananaConfig *banana_config);

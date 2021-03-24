@@ -79,7 +79,10 @@ void MyEncoder::Debounce()
         // a full cycle in both A and B for each detent, and appears to finish with
         // both A and B high. We only look for transitions 0b000111 and 0b001011,
         // and ignore 0b111000 and 0b110100
-        if ((value_on_rising_ && transitions_ == 0b000111) || (value_on_falling_ && transitions_ == 0b111000))  // CW direction
+
+        // Since 11 is usual state in indent, normally look for transitions 100001 and 010010
+        // If we're also looking for values on rising, look for transitions 011110 and 101101
+        if ((value_on_falling_ && transitions_ == 0b100001) || (value_on_rising_ && transitions_ == 011110))  // CW direction
         {
             inc_ = 1;
             val_++;
@@ -88,7 +91,7 @@ void MyEncoder::Debounce()
                 val_ = wrap_mode_ ? min_val_ : max_val_;
             }
         }
-        else if ((value_on_rising_ && transitions_ == 0b001011) || (value_on_falling_ && transitions_ == 0b110100)) // CCW direction
+        else if ((value_on_falling_ && transitions_ == 0b010010) || (value_on_rising_ && transitions_ == 101101)) // CCW direction
         {
             inc_ = -1;
             val_--;

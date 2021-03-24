@@ -171,7 +171,7 @@ void AdafruitLedController::SetFloat(uint8_t n, float r, float g, float b)
 
 void AdafruitLedController::SetFloat(uint8_t n, float v)
 {
-    SetFloat(n, v);
+    SetFloat(n, v, v, v);
 }
 
 void AdafruitLedController::Clear()

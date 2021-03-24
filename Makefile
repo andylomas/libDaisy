@@ -63,6 +63,7 @@ myUtils/myRgbLed \
 myUtils/myLedController \
 myUtils/myShiftedLCD \
 myUtils/adafruitLedController \
+myUtils/Adafruit24ChLedController \
 myUtils/myBanana
 
 ######################################

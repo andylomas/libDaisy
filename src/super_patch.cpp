@@ -441,24 +441,19 @@ void SuperPatch::InitLedController()
     led_controller.Clear();
 }
 
-int SuperPatch::SerialSend(uint8_t *buff, size_t size)
+int SuperPatch::SerialSend(const char *buff, size_t size)
 {
-    uart.PollTx(buff, size);
+    return uart.PollTx((uint8_t*)buff, size);
 }
 
 int SuperPatch::SerialReceive(size_t size)
 {
     // Reads up to SERIAL_BUFFER_SIZE bytes from the UART into serial_buffer
     int count = 0;
-    while (uart.Readable() && count < SERIAL_BUFFER_SIZE)
+    while (uart.Readable() && count < size)
     {
         serial_buffer[count] = uart.PopRx();
         count++;
-    }
-
-    if (null_termination && count < SERIAL_BUFFER_SIZE)
-    {
-        serial_buffer[count] = 0;
     }
 
     if(!uart.RxActive())
