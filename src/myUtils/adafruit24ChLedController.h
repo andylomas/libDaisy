@@ -3,8 +3,7 @@
 #ifndef DSY_ADAFRUIT24CHLEDCONTROLLER_H
 #define DSY_ADAFRUIT24CHLEDCONTROLLER_H
 
-// Class for controlling LEDs using Adafruit 24 Channel
-// 12 bit PWM LED Controller
+// Class for controlling LEDs using Adafruit 24 Channel 12 bit PWM LED Controller
 
 // Based on Arduino library: https://github.com/adafruit/Adafruit_TLC5947
 
