@@ -5,8 +5,6 @@
 #define NUM_LEDS 8
 #define NUM_CHANNELS 24
 
-static daisy::SpiHandle h_spi;
-
 Adafruit24ChLedController::Adafruit24ChLedController()
 {
     // Constructor
@@ -108,23 +106,15 @@ void Adafruit24ChLedController::Clear()
    
 void Adafruit24ChLedController::Update()
 {
-    dsy_gpio_write(&pin_latch_, 0);
-
     // 24 channels per TLC5974
     for (int16_t c = NUM_CHANNELS - 1; c >= 0; c--) {
         // 12 bits per channel, send MSB first
         for (int8_t b = 11; b >= 0; b--) {
+            dsy_gpio_write(&pin_data_, !!(pwm_buffer_[c] & (1 << b)));
+            dsy_gpio_write(&pin_clock_, 1);
             dsy_gpio_write(&pin_clock_, 0);
-
-        if (pwm_buffer_[c] & (1 << b))
-            dsy_gpio_write(&pin_data_, 1);
-        else
-            dsy_gpio_write(&pin_data_, 0);
-
-        dsy_gpio_write(&pin_clock_, 1);
         }
     }
-    dsy_gpio_write(&pin_clock_, 0);
 
     dsy_gpio_write(&pin_latch_, 1);
     dsy_gpio_write(&pin_latch_, 0);
